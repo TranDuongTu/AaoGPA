@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <context:annotation-config />
+
+    <tx:annotation-driven />
+
+    <!-- Initialization for data source -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/aao_gpa"/>
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <!-- Factory for hibernate integration -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mappingResources">
+            <list>
+                <value>hibernate/mappings/Course.hbm.xml</value>
+                <value>hibernate/mappings/Student.hbm.xml</value>
+                <value>hibernate/mappings/CourseResult.hbm.xml</value>
+                <value>hibernate/mappings/UpdateStatus.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <!-- DAO objects -->
+    <bean id="studentDAO" class="com.tutran.aaogpa.data.local.hibernate.StudentDAOHibernate" />
+    <bean id="courseDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseDAOHibernate" />
+    <bean id="courseResultDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseResultDAOHibernate" />
+    <bean id="updateStatusDAO" class="com.tutran.aaogpa.data.local.hibernate.UpdateStatusDAOHibernate" />
+
+    <!-- Web Repository -->
+    <bean id="aaoWeb" class="com.tutran.aaogpa.data.web.http.httpclient.AaoWebHttpClient" />
+    <bean id="aaoWebHtmlParser" class="com.tutran.aaogpa.data.web.parsers.jsoup.AaoWebHtmlParserJsoup" />
+    <bean id="webDataRepository" class="com.tutran.aaogpa.services.WebDataRepository" />
+
+    <!-- Local Data Repository -->
+    <bean id="localDataRepository" class="com.tutran.aaogpa.services.LocalDataRepository" />
+
+    <!-- Application configs -->
+    <bean id="dataScope" class="com.tutran.aaogpa.data.DataScope">
+        <property name="faculties">
+            <map>
+                <entry key="0" value="Tất cả các khoa" />
+                <entry key="5" value="Khoa Học và Kỹ Thuật Máy Tính" />
+                <entry key="8" value="Kỹ Thuật Xây Dựng" />
+                <entry key="7" value="Quản Lý Công Nghiệp" />
+            </map>
+        </property>
+        <property name="supportYears">
+            <list>
+                <value>2010-2014</value>
+                <value>2010</value>
+                <value>2011</value>
+                <value>2012</value>
+                <value>2013</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

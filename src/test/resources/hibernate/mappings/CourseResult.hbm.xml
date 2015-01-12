@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.tutran.aaogpa.data.models.CourseResult" table="COURSE_RESULT">
+        <id name="id" type="int" column="cr_id">
+            <generator class="native" />
+        </id>
+        <many-to-one name="student" column="stu_id"
+                     class="com.tutran.aaogpa.data.models.Student"
+                     cascade="save-update"
+                     not-null="true"/>
+        <many-to-one name="course" column="co_id"
+                     class="com.tutran.aaogpa.data.models.Course"
+                     cascade="all"
+                     not-null="true" />
+        <property name="result" column="result" type="double" />
+    </class>
+</hibernate-mapping>

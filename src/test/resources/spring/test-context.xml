@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <context:annotation-config />
+
+    <tx:annotation-driven />
+
+    <!-- Initialization for services source -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/aao_gpa_test"/>
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <!-- Factory for hibernate integration -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mappingResources">
+            <list>
+                <value>hibernate/mappings/Course.hbm.xml</value>
+                <value>hibernate/mappings/Student.hbm.xml</value>
+                <value>hibernate/mappings/CourseResult.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <!-- DAO objects -->
+    <bean id="studentDAO" class="com.tutran.aaogpa.data.local.hibernate.StudentDAOHibernate" />
+    <bean id="courseDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseDAOHibernate" />
+    <bean id="courseResultDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseResultDAOHibernate" />
+
+    <!-- Web Repository -->
+    <bean id="aaoWeb" class="com.tutran.aaogpa.data.web.http.httpclient.AaoWebHttpClient" />
+    <bean id="aaoWebHtmlParser" class="com.tutran.aaogpa.data.web.parsers.jsoup.AaoWebHtmlParserJsoup" />
+    <bean id="webDataRepository" class="com.tutran.aaogpa.services.WebDataRepository" />
+
+    <!-- Dummy services for testing -->
+    <bean id="stu1" class="com.tutran.aaogpa.data.models.Student">
+        <property name="id" value="51003857" />
+        <property name="name" value="Tu Tran" />
+    </bean>
+    <bean id="stu2" class="com.tutran.aaogpa.data.models.Student">
+        <property name="id" value="51000443" />
+        <property name="name" value="Duy Cao" />
+    </bean>
+    <bean id="stu3" class="com.tutran.aaogpa.data.models.Student">
+        <property name="id" value="51001048" />
+        <property name="name" value="Hiep Le" />
+    </bean>
+
+    <bean id="co1" class="com.tutran.aaogpa.data.models.Course">
+        <property name="id" value="501001" />
+        <property name="name" value="Data Structure" />
+    </bean>
+    <bean id="co2" class="com.tutran.aaogpa.data.models.Course">
+        <property name="id" value="501002" />
+        <property name="name" value="Algorithm" />
+    </bean>
+
+    <bean id="cr1" class="com.tutran.aaogpa.data.models.CourseResult">
+        <property name="student" ref="stu1" />
+        <property name="course" ref="co1" />
+        <property name="result" value="9.0" />
+    </bean>
+    <bean id="cr2" class="com.tutran.aaogpa.data.models.CourseResult">
+        <property name="student" ref="stu1" />
+        <property name="course" ref="co2" />
+        <property name="result" value="9.5" />
+    </bean>
+    <bean id="cr3" class="com.tutran.aaogpa.data.models.CourseResult">
+        <property name="student" ref="stu2" />
+        <property name="course" ref="co1" />
+        <property name="result" value="8.5" />
+    </bean>
+    <bean id="cr4" class="com.tutran.aaogpa.data.models.CourseResult">
+        <property name="student" ref="stu2" />
+        <property name="course" ref="co2" />
+        <property name="result" value="8.5" />
+    </bean>
+    <bean id="cr5" class="com.tutran.aaogpa.data.models.CourseResult">
+        <property name="student" ref="stu3" />
+        <property name="course" ref="co1" />
+        <property name="result" value="9.8" />
+    </bean>
+
+    <util:list id="testStudents" list-class="java.util.ArrayList"
+               value-type="com.tutran.aaogpa.data.models.Student">
+        <ref bean="stu1" />
+        <ref bean="stu2" />
+        <ref bean="stu3" />
+    </util:list>
+
+    <util:list id="testCourses" list-class="java.util.ArrayList"
+               value-type="com.tutran.aaogpa.data.models.Course">
+        <ref bean="co1" />
+        <ref bean="co2" />
+    </util:list>
+
+    <util:list id="testCrs" list-class="java.util.ArrayList"
+               value-type="com.tutran.aaogpa.data.models.CourseResult">
+        <ref bean="cr1" />
+        <ref bean="cr2" />
+        <ref bean="cr3" />
+    </util:list>
+
+</beans>
