@@ -33,7 +33,7 @@ public class CourseResultDAOTest extends GenericDAOTest {
         courseResultDAO.save(cr);
 
         List<CourseResult> retrievedCrs =
-                courseResultDAO.findCourseResultsOfStudentId(stu.getId());
+                courseResultDAO.findCourseResultsOfStudentId(stu.getStudentId());
         for (CourseResult cResult : retrievedCrs) {
             if (stu.getId() == cResult.getStudent().getId()
                     && co.getId() == cResult.getCourse().getId()) {

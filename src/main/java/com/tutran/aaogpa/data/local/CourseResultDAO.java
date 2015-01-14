@@ -7,8 +7,8 @@ import java.util.List;
 
 @Transactional
 public interface CourseResultDAO extends GenericDAO<CourseResult> {
-    List<CourseResult> findCourseResultsOfStudentId(int id);
-    List<CourseResult> findCourseResultsOfCourseId(int id);
-    List<CourseResult> findCourseResultsOfStudentInRange(int stuId, double minMark, double maxMark);
-    List<CourseResult> findCourseResultsOfCourseInRange(int coId, double minMark, double maxMark);
+    List<CourseResult> findCourseResultsOfStudentId(String id);
+    List<CourseResult> findCourseResultsOfCourseId(String id);
+    List<CourseResult> findBestCourseResultsOfStudentId(String stuId, int maxResults);
+    List<CourseResult> findBestCourseResultsOfCourseId(String coId, int maxResults);
 }

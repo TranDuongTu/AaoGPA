@@ -26,6 +26,10 @@ public class LocalDataRepository {
     private CourseResultDAO courseResultDAO;
     private UpdateStatusDAO updateStatusDAO;
 
+    // ========================================================================
+    // GETTERs AND SETTERs
+    // ========================================================================
+
     public StudentDAO getStudentDAO() {
         return studentDAO;
     }
@@ -72,35 +76,41 @@ public class LocalDataRepository {
     }
 
     // ========================================================================
-    // EXPOSED API
+    // DATA ACCESS METHODS
     // ========================================================================
 
     public void clearAllData() {
         courseResultDAO.deleteAll();
         courseDAO.deleteAll();
         studentDAO.deleteAll();
+        updateStatusDAO.deleteAll();
     }
 
-    public int getTotalStudents() {
+    /**
+     * For Students data
+     */
+
+    public void insertStudent(Student student) {
+        studentDAO.save(student);
+    }
+
+    public int getStudentsCount() {
         return studentDAO.size();
     }
 
-    public int getTotalStudentsByIDPrefixPattern(String pattern) {
-        return studentDAO.findStudentsCountByIDPrefixPattern(pattern);
+    public int getStudentsCountByIDPattern(String pattern) {
+        if (pattern == null) pattern = "";
+        return studentDAO.findStudentsCountByIDPattern(pattern);
     }
 
-    public List<Student> getStudentsFromFacultyAndYear(
-            String facultyString, String year) {
-        if (facultyString == null) facultyString = "";
-        if (year == null) year = "";
-
-        String pattern = facultyString + year.substring(2);
-        return studentDAO.findStudentsByIDPrefixPattern(pattern);
+    public List<Student> getStudentsByIDPattern(String pattern) {
+        if (pattern == null) pattern = "";
+        return studentDAO.findStudentsByIDPattern(pattern);
     }
 
     public Student getStudentById(String stuId) {
         if (stuId == null) stuId = "";
-        return studentDAO.findStudentByExactID(stuId);
+        return studentDAO.findStudentByID(stuId);
     }
 
     public List<Student> getStudentsByName(String name) {
@@ -108,39 +118,68 @@ public class LocalDataRepository {
         return studentDAO.findStudentsByName(name);
     }
 
-    public int getTotalCourses() {
+    /**
+     * For Course data
+     */
+
+    public void insertCourse(Course course) {
+        courseDAO.save(course);
+    }
+
+    public int getCoursesCount() {
         return courseDAO.size();
     }
 
-    public int getTotalCoursesByIDPrefixPattern(String pattern) {
-        return courseDAO.findCoursesCountByIDPrefixPattern(pattern);
+    public int getCoursesCountByIDPattern(String pattern) {
+        return courseDAO.findCoursesCountByIDPattern(pattern);
     }
+
 
     public List<Course> getCoursesByName(String name) {
         if (name == null) name = "";
         return courseDAO.findCoursesByName(name);
     }
 
-    public List<Course> getCoursesFromFaculty(String facultyString) {
-        if (facultyString == null) facultyString = "";
-        return courseDAO.findCoursesByIdPrefixPattern(facultyString);
+    public List<Course> getCoursesByIDPattern(String pattern) {
+        if (pattern == null) pattern = "";
+        return courseDAO.findCoursesByIdPattern(pattern);
+    }
+
+    public List<Course> getCoursesByCredit(int min, int max) {
+        return courseDAO.findCoursesByCredit(min, max);
+    }
+
+    /**
+     * For CourseResult data
+     */
+
+    public void insertCourseResult(CourseResult courseResult) {
+        if (courseResult.getResult() > 10) courseResult.setResult(0);
+        courseResultDAO.save(courseResult);
     }
 
     public List<CourseResult> getAllCourseResults() {
         return courseResultDAO.getAll();
     }
 
-    public void insertCourse(Course course) {
-        courseDAO.save(course);
+    public List<CourseResult> getBestCourseResultsOfCourse(String coId, int maxResults) {
+        if (coId == null) coId = "";
+        return courseResultDAO.findBestCourseResultsOfCourseId(coId, maxResults);
     }
 
-    public void insertStudent(Student student) {
-        studentDAO.save(student);
+    public List<CourseResult> getAllCourseResultsOfCourse(String coId) {
+        if (coId == null) coId = "";
+        return courseResultDAO.findCourseResultsOfCourseId(coId);
     }
 
-    public void insertCourseResult(CourseResult courseResult) {
-        courseResultDAO.save(courseResult);
+    public List<CourseResult> getAllCourseResultsOfStudent(String stuId) {
+        if (stuId == null) stuId = "";
+        return courseResultDAO.findCourseResultsOfStudentId(stuId);
     }
+
+    /**
+     * Data Status
+     */
 
     public Date getLastDateUpdate() {
         SimpleDateFormat formatString = new SimpleDateFormat("yyyyMMddHHmmSS");

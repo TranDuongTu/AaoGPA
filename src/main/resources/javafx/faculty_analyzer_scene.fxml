@@ -1,12 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tutran.aaogpa.applications.javafxapp.controllers.FacultyAnalyzerSceneController">
-   <bottom>
-      <Button fx:id="closeBtn" mnemonicParsing="false" onAction="#handleCloseBtnAction" text="Close" BorderPane.alignment="CENTER" />
-   </bottom>
+<?import javafx.scene.text.Font?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tutran.aaogpa.applications.javafxapp.controllers.FacultyAnalyzerSceneController">
+   <center>
+      <BarChart fx:id="compareHistogram" title="Score Histogram Amongst Faculties And Years" BorderPane.alignment="CENTER">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+         <BorderPane.margin>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </BorderPane.margin>
+      </BarChart>
+   </center>
+   <top>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="125.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="50.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="7.0" prefWidth="125.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Faculties Comparator" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+               <font>
+                  <Font name="System Bold Italic" size="20.0" />
+               </font>
+            </Label>
+            <Label text="Chosen Faculties" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Italic" size="15.0" />
+               </font>
+            </Label>
+            <Label text="Chosen years" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <ListView fx:id="facultyList" prefHeight="30.0" prefWidth="317.0" GridPane.rowIndex="2" GridPane.rowSpan="3">
+               <GridPane.margin>
+                  <Insets left="32.0" right="32.0" />
+               </GridPane.margin>
+            </ListView>
+            <ListView fx:id="yearList" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="3">
+               <GridPane.margin>
+                  <Insets left="32.0" right="32.0" />
+               </GridPane.margin>
+            </ListView>
+             <Button fx:id="compareBtn" mnemonicParsing="false" onAction="#handleCompareBtnAction" prefHeight="31.0" prefWidth="200.0" text="Start Comparing" GridPane.rowIndex="2" GridPane.columnIndex="2" GridPane.rowSpan="2" GridPane.halignment="CENTER" />
+             <Button fx:id="backBtn" mnemonicParsing="false" onAction="#handleBackBtnAction" prefHeight="31.0" prefWidth="200.0" text="Back" GridPane.rowIndex="4" GridPane.columnIndex="2" GridPane.rowSpan="1" GridPane.halignment="CENTER" />
+         </children>
+         <padding>
+            <Insets left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </GridPane>
+   </top>
 </BorderPane>

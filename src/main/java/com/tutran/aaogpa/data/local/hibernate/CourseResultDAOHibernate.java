@@ -15,7 +15,7 @@ public class CourseResultDAOHibernate
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<CourseResult> findCourseResultsOfCourseId(int coId) {
+    public List<CourseResult> findCourseResultsOfCourseId(String coId) {
         Query query = getSessionFactory().getCurrentSession()
                 .createQuery(
                         "FROM " + getType().getName()
@@ -27,7 +27,7 @@ public class CourseResultDAOHibernate
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<CourseResult> findCourseResultsOfStudentId(int stuId) {
+    public List<CourseResult> findCourseResultsOfStudentId(String stuId) {
         Query query = getSessionFactory().getCurrentSession()
                 .createQuery(
                         "FROM " + getType().getName()
@@ -39,35 +39,27 @@ public class CourseResultDAOHibernate
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<CourseResult> findCourseResultsOfStudentInRange(
-            int stuId, double minMark, double maxMark) {
-        Query query = getSessionFactory().getCurrentSession()
+    public List<CourseResult> findBestCourseResultsOfStudentId(String stuId, int maxResults) {
+        return getSessionFactory().getCurrentSession()
                 .createQuery(
                         "FROM " + getType().getName()
                                 + " CR WHERE CR.student.studentId = :stuId "
-                                + "AND CR.result >= :min "
-                                + "AND CR.result <= :max"
-                );
-        query.setParameter("stuId", stuId);
-        query.setParameter("min", minMark);
-        query.setParameter("max", maxMark);
-        return query.list();
+                                + "ORDER BY CR.result DESC")
+                .setParameter("stuId", stuId)
+                .setMaxResults(maxResults)
+                .list();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<CourseResult> findCourseResultsOfCourseInRange(
-            int coId, double minMark, double maxMark) {
-        Query query = getSessionFactory().getCurrentSession()
+    public List<CourseResult> findBestCourseResultsOfCourseId(String coId, int maxResults) {
+        return getSessionFactory().getCurrentSession()
                 .createQuery(
                         "FROM " + getType().getName()
                                 + " CR WHERE CR.course.courseId = :coId "
-                                + "AND CR.result >= :min "
-                                + "AND CR.result <= :max"
-                );
-        query.setParameter("coId", coId);
-        query.setParameter("min", minMark);
-        query.setParameter("max", maxMark);
-        return query.list();
+                                + "ORDER BY CR.result DESC")
+                .setParameter("coId", coId)
+                .setMaxResults(maxResults)
+                .list();
     }
 }

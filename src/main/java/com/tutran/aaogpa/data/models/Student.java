@@ -23,8 +23,8 @@ public class Student extends DomainObject {
     @Override
     public String toString() {
         return String.format(
-                "[ID: %s; Name: %s]",
-                id, name
+                "%s - %s",
+                studentId, name
         );
     }
 

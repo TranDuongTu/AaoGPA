@@ -66,11 +66,15 @@
         <property name="faculties">
             <map>
                 <entry key="5" value="KH &amp; KT Máy Tính" />
+                <entry key="8" value="Kỹ thuật xây dựng" />
+                <entry key="7" value="Quản lý công nghiệp" />
             </map>
         </property>
         <property name="supportYears">
             <list>
                 <value>2010</value>
+                <value>2011</value>
+                <value>2012</value>
             </list>
         </property>
     </bean>

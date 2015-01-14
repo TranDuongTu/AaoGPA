@@ -1,10 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tutran.aaogpa.applications.javafxapp.controllers.CourseAnalyzerSceneController">
-   <bottom>
-      <Button fx:id="closeBtn" mnemonicParsing="false" onAction="#handleCloseBtnAction" text="Close" BorderPane.alignment="CENTER" />
-   </bottom>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tutran.aaogpa.applications.javafxapp.controllers.CourseAnalyzerSceneController">
+   <top>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="468.0" minWidth="10.0" prefWidth="327.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="468.0" minWidth="10.0" prefWidth="329.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="468.0" minWidth="10.0" prefWidth="327.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="42.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="30.0" minHeight="3.0" prefHeight="22.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Course ID" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <padding>
+                  <Insets right="32.0" />
+               </padding>
+               <font>
+                  <Font name="System Italic" size="15.0" />
+               </font>
+            </Label>
+            <Label text="Course Name" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <font>
+                  <Font name="System Italic" size="15.0" />
+               </font>
+               <padding>
+                  <Insets right="32.0" />
+               </padding>
+            </Label>
+            <Label text="Course Credit" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <padding>
+                  <Insets right="32.0" />
+               </padding>
+               <font>
+                  <Font name="System Italic" size="15.0" />
+               </font>
+            </Label>
+            <TextField fx:id="idTextField" promptText="e.g. 006001" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="32.0" right="32.0" />
+               </GridPane.margin>
+            </TextField>
+            <TextField fx:id="nameTextField" promptText="Part of the name (e.g. thí nghiệm)" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="32.0" right="32.0" />
+               </GridPane.margin>
+            </TextField>
+            <TextField fx:id="creditTextField" promptText="An integer" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <GridPane.margin>
+                  <Insets left="32.0" right="32.0" />
+               </GridPane.margin>
+            </TextField>
+             <HBox alignment="CENTER_RIGHT" prefHeight="34.0" prefWidth="203.0" GridPane.rowIndex="4">
+                 <children>
+                     <ChoiceBox fx:id="criteriaChoiceBox" prefWidth="150.0">
+                         <HBox.margin>
+                             <Insets right="8.0" />
+                         </HBox.margin>
+                     </ChoiceBox>
+                     <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#handleSearchBtnAction" text="Search" />
+                 </children>
+             </HBox>
+            <Label text="Course Analyzer" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <Button fx:id="analyzeBtn" mnemonicParsing="false" onAction="#handleAnalyzeBtnAction" text="Analyze" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Label text="Courses satisfy criteria" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+               <font>
+                  <Font name="System Italic" size="15.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="coursesChoiceBox" prefHeight="31.0" prefWidth="315.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </GridPane>
+   </top>
+   <right>
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="260.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="468.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Best students" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER">
+               <font>
+                  <Font name="System Bold Italic" size="15.0" />
+               </font>
+            </Label>
+            <ListView fx:id="bestStudentsList" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+            <Button fx:id="backBtn" mnemonicParsing="false" text="Return to Overview Scene" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" onAction="#handleBackBtnAction" />
+         </children>
+         <padding>
+            <Insets bottom="8.0" right="8.0" />
+         </padding>
+      </GridPane>
+   </right>
+   <center>
+      <BarChart fx:id="coursesHistogramChart" title="Performance amongst Faculties" BorderPane.alignment="CENTER">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+   </center>
 </BorderPane>

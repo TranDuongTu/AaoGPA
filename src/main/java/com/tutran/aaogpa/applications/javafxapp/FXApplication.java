@@ -42,7 +42,7 @@ public class FXApplication extends Application
 
         primaryStage.setTitle("AAO GPA Analyer");
         primaryStage.setScene(scenes.get(SceneID.OverView));
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         primaryStage.show();
     }
 

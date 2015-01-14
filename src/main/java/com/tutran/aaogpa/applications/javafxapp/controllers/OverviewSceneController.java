@@ -16,7 +16,6 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,7 +23,7 @@ import java.util.*;
 public class OverviewSceneController extends Controller {
 
     private static final int STUDENT_NUMBER_LENGTH = 5;
-    private static final int MAX_STUDENT_NUMBER = 5000;
+    private static final int MAX_STUDENT_NUMBER = 10000;
 
     private static final int NUMBER_OF_BIN = 20;
 
@@ -33,10 +32,8 @@ public class OverviewSceneController extends Controller {
     // ========================================================================
 
     @FXML
-    private Button loadDataBtn, clearDataBtn;
-
-    @FXML
-    private Button individualBtn, courseBtn, facultyBtn;
+    private Button loadDataBtn, clearDataBtn,
+            individualBtn, courseBtn, facultyBtn;
 
     @FXML
     private Label totalStudentLabel, totalCourseLabel,
@@ -102,54 +99,53 @@ public class OverviewSceneController extends Controller {
     }
 
     // ========================================================================
-    // ADDITION TYPES
-    // ========================================================================
-
-    private class KeyValuePair extends Pair<String, String> {
-        public KeyValuePair(String key, String value) {
-            super(key, value);
-        }
-
-        @Override
-        public String toString() {
-            return getValue();
-        }
-    }
-
-    // ========================================================================
-    // PRIVATE HELPERS
+    // MANAGE SCENE STATUS
     // ========================================================================
 
     private void updateDataStatus() {
-        // Total students and courses
-        totalStudentLabel.setText("Total students: "
-                + localDataRepository.getTotalStudents());
-        totalCourseLabel.setText("Total courses: "
-                + localDataRepository.getTotalCourses());
+        setTotalStudentAndCourseLabels();
 
-        // total faculties and years (query by id prefix pattern)
+        setTotalFacultyAndYearLabels();
+
+        setListViewsForSupportedFacultyAndYears();
+
+        setDataStatusLabel();
+
+        updateChart();
+    }
+
+    private void setTotalStudentAndCourseLabels() {
+        totalStudentLabel.setText("Total students: "
+                + localDataRepository.getStudentsCount());
+        totalCourseLabel.setText("Total courses: "
+                + localDataRepository.getCoursesCount());
+    }
+
+    private void setTotalFacultyAndYearLabels() {
         int totalFaculties = 0, totalYears = 0;
         for (String faculty : dataScope.getFaculties().keySet()) {
-            if (localDataRepository.getTotalStudentsByIDPrefixPattern(faculty) != 0)
+            if (localDataRepository.getStudentsCountByIDPattern(faculty + "%") != 0)
                 totalFaculties += 1;
         }
-        for (String year : dataScope.getSupportYears())
-            if (localDataRepository.getTotalStudentsByIDPrefixPattern(
-                    "_" + year.substring(2)) > 0) {
+        for (String year : dataScope.getSupportYears()) {
+            if (localDataRepository.getStudentsCountByIDPattern(
+                    "_" + year.substring(2) + "%") > 0)
                 totalYears += 1;
-            }
+        }
         totalFacultyLabel.setText("Total faculties: " + totalFaculties);
         totalYearLabel.setText("Total years: " + totalYears);
+    }
 
-        // Feed ListViews
+    private void setListViewsForSupportedFacultyAndYears() {
         facultyList.getItems().clear();
         yearList.getItems().clear();
         for (String facultyName : dataScope.getFaculties().values())
-                facultyList.getItems().add(0, facultyName);
+            facultyList.getItems().add(0, facultyName);
         for (String year : dataScope.getSupportYears())
-                yearList.getItems().add(0, year);
+            yearList.getItems().add(0, year);
+    }
 
-        // Data validity
+    private void setDataStatusLabel() {
         Date lastUpdatDate = localDataRepository.getLastDateUpdate();
         if (lastUpdatDate == null)
             dateUpdateLabel.setText("Data has never been updated");
@@ -163,9 +159,6 @@ public class OverviewSceneController extends Controller {
             dataStatusLabel.setText("Data Status - incomplete");
             dataStatusLabel.setTextFill(Color.RED);
         }
-
-        // update chart
-        updateChart();
     }
 
     private void disableScene() {
@@ -194,41 +187,9 @@ public class OverviewSceneController extends Controller {
         progressLabel.setText("");
     }
 
-    private List<CourseResult> aggregateParsedData(ParsedResult parsedResult) {
-        List<CourseResult> result = new ArrayList<CourseResult>();
-
-        Student stu = parsedResult.getStudent();
-        for (String coId : parsedResult.getTakenCourses().keySet()) {
-            Course course = parsedResult.getTakenCourses().get(coId);
-            Double maxScore = Collections.max(parsedResult.getTakenCoursesResult().get(coId));
-
-            CourseResult cr = new CourseResult();
-            cr.setStudent(stu);
-            cr.setCourse(course);
-            cr.setResult(maxScore);
-            result.add(cr);
-        }
-
-        return result;
-    }
-
-    private String fiveDigitsInteger(int x) {
-        StringBuilder result = new StringBuilder(String.valueOf(x));
-        result.reverse();
-        int length = result.length();
-        for (int i = 0; i < STUDENT_NUMBER_LENGTH - length; i++)
-            result.append("0");
-        return result.reverse().toString();
-    }
-
-    private int estimateWorkload(List<String> faculties, List<String> years) {
-        // Estimate workload
-        int totalStudents = 0;
-        for (String x : faculties)
-            for (String y : years)
-                totalStudents += MAX_STUDENT_NUMBER;
-        return totalStudents;
-    }
+    // ========================================================================
+    // PRIVATE HELPERS
+    // ========================================================================
 
     private Task<Void> createBackgroundDataCrawlingTask(
             final List<String> faculties,
@@ -290,10 +251,8 @@ public class OverviewSceneController extends Controller {
                 for (String faculty : faculties) {
                     for (String year : years) {
                         for (int i = 0; i <= 9999; i++) {
-                            String nextStudent = faculty + year.substring(2)
-                                    + fiveDigitsInteger(i);
-                            ParsedResult result = webDataRepository
-                                    .getMarkOfStudentBlocking(nextStudent);
+                            String nextStudent = faculty + year.substring(2) + fiveDigitsInteger(i);
+                            ParsedResult result = webDataRepository.getMarkOfStudentBlocking(nextStudent);
 
                             if (result != null)
                                 for (CourseResult cr : aggregateParsedData(result)) {
@@ -302,8 +261,7 @@ public class OverviewSceneController extends Controller {
                                         cr.getCourse().setId(id);
                                     }
                                     localDataRepository.insertCourseResult(cr);
-                                    insertedCourses.put(cr.getCourse().getCourseId(),
-                                            cr.getCourse().getId());
+                                    insertedCourses.put(cr.getCourse().getCourseId(), cr.getCourse().getId());
                                 }
 
                             parsedStudents++;
@@ -326,9 +284,47 @@ public class OverviewSceneController extends Controller {
         return task;
     }
 
+    private List<CourseResult> aggregateParsedData(ParsedResult parsedResult) {
+        List<CourseResult> result = new ArrayList<CourseResult>();
+
+        Student stu = parsedResult.getStudent();
+        for (String coId : parsedResult.getTakenCourses().keySet()) {
+            Course course = parsedResult.getTakenCourses().get(coId);
+            Double maxScore = Collections.max(
+                    parsedResult.getTakenCoursesResult().get(coId));
+
+            CourseResult cr = new CourseResult();
+            cr.setStudent(stu);
+            cr.setCourse(course);
+            cr.setResult(maxScore);
+            result.add(cr);
+        }
+
+        return result;
+    }
+
+    private String fiveDigitsInteger(int x) {
+        StringBuilder result = new StringBuilder(String.valueOf(x));
+        result.reverse();
+        int length = result.length();
+        for (int i = 0; i < STUDENT_NUMBER_LENGTH - length; i++)
+            result.append("0");
+        return result.reverse().toString();
+    }
+
+    private int estimateWorkload(List<String> faculties, List<String> years) {
+        int totalStudents = 0;
+        for (String x : faculties)
+            for (String y : years)
+                totalStudents += MAX_STUDENT_NUMBER;
+        return totalStudents;
+    }
+
     private void updateChart() {
         if (!localDataRepository.getLastUpdateStatus())
             return;
+
+        scoreHistogram.getData().clear();
 
         List<CourseResult> allResults = localDataRepository.getAllCourseResults();
         Map<Student, Double> studentGPAs = Statistician.calculateStudentGPAs(allResults);
