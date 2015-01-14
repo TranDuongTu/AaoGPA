@@ -75,6 +75,12 @@ public class LocalDataRepository {
     // EXPOSED API
     // ========================================================================
 
+    public void clearAllData() {
+        courseResultDAO.deleteAll();
+        courseDAO.deleteAll();
+        studentDAO.deleteAll();
+    }
+
     public int getTotalStudents() {
         return studentDAO.size();
     }
@@ -120,15 +126,19 @@ public class LocalDataRepository {
         return courseDAO.findCoursesByIdPrefixPattern(facultyString);
     }
 
-    public void addCourse(Course course) {
+    public List<CourseResult> getAllCourseResults() {
+        return courseResultDAO.getAll();
+    }
+
+    public void insertCourse(Course course) {
         courseDAO.save(course);
     }
 
-    public void addStudent(Student student) {
+    public void insertStudent(Student student) {
         studentDAO.save(student);
     }
 
-    public void addCourseResult(CourseResult courseResult) {
+    public void insertCourseResult(CourseResult courseResult) {
         courseResultDAO.save(courseResult);
     }
 
@@ -146,8 +156,10 @@ public class LocalDataRepository {
 
     public boolean getLastUpdateStatus() {
         UpdateStatus lastUpdate = updateStatusDAO.getLastUpdate();
-        if (lastUpdate != null)
-            return lastUpdate.getStatus();
-        return false;
+        return lastUpdate != null && lastUpdate.getStatus();
+    }
+
+    public void insertOrUpdateStatus(UpdateStatus updateStatus) {
+        updateStatusDAO.save(updateStatus);
     }
 }

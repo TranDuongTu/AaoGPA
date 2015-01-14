@@ -21,16 +21,13 @@ import java.util.ArrayList;
 public class AaoWebHttpClient implements AaoWeb {
 
     @Override
-    public String getResultsBlocking(int id) {
+    public String getResultsBlocking(String id) {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost request = new HttpPost(URL);
 
-        // add request header
-        request.addHeader("User-Agent", "Firefox");
-
         // add request params
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("mssv", String.valueOf(id)));
+        params.add(new BasicNameValuePair("mssv", id));
         params.add(new BasicNameValuePair("HOC_KY", "d.hk_nh is not NULL"));
         try {
             request.setEntity(new UrlEncodedFormEntity(params));
@@ -39,7 +36,7 @@ public class AaoWebHttpClient implements AaoWeb {
         }
 
         // making request and fetch result
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         try {
             HttpResponse response = client.execute(request);
             BufferedReader rd = new BufferedReader(

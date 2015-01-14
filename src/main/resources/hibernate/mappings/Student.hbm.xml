@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.tutran.aaogpa.data.models.Student" table="STUDENT">
+    <class name="com.tutran.aaogpa.data.models.Student" table="STUDENT" lazy="false">
         <id name="id" type="int" column="id">
             <generator class="native" />
         </id>

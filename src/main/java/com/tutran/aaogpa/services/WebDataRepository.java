@@ -19,7 +19,7 @@ public class WebDataRepository {
         this.aaoWebHtmlParser = aaoWebHtmlParser;
     }
 
-    public ParsedResult getMarkOfStudentBlocking(int id) {
+    public ParsedResult getMarkOfStudentBlocking(String id) {
         return aaoWebHtmlParser.parse(aaoWeb.getResultsBlocking(id));
     }
 

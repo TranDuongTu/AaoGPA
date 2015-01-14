@@ -1,7 +1,7 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
-import com.tutran.aaogpa.data.DataScope;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
+import com.tutran.aaogpa.data.DataScope;
 import com.tutran.aaogpa.services.LocalDataRepository;
 import com.tutran.aaogpa.services.WebDataRepository;
 

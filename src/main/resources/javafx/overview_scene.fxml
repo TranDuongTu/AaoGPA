@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="755.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tutran.aaogpa.applications.javafxapp.controllers.OverviewSceneController">
    <bottom>
       <GridPane vgap="4.0" BorderPane.alignment="CENTER">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="209.0" minWidth="10.0" prefWidth="56.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="373.0" minWidth="10.0" prefWidth="290.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="450.0" minWidth="10.0" prefWidth="278.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="299.0" minWidth="10.0" prefWidth="221.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="211.0" minWidth="10.0" prefWidth="211.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="373.0" minWidth="10.0" prefWidth="235.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="450.0" minWidth="10.0" prefWidth="219.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="299.0" minWidth="10.0" prefWidth="210.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="198.0" minWidth="10.0" prefWidth="198.0" />
         </columnConstraints>
         <rowConstraints>
@@ -22,31 +24,36 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Faculty" GridPane.rowIndex="1" />
-            <ChoiceBox fx:id="facultyChoice" prefWidth="250.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-            <Label alignment="CENTER" text="Data Loading criteria" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER">
+            <Label fx:id="dataStatusLabel" text="Data Status" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Label text="Year" GridPane.rowIndex="2" />
-            <ChoiceBox fx:id="yearChoice" prefWidth="250.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-            <Label fx:id="dataStatusLabel" text="Data Status" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-            <Button fx:id="dataLoadBtn" mnemonicParsing="false" onAction="#handleDataLoadBtnAction" text="Load Data From Web" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
-            <Label fx:id="totalFacultyLabel" text="Total faculty" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label fx:id="totalYearLabel" text="Total years" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Label fx:id="totalStudentLabel" text="Total students" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label fx:id="totalCourseLabel" text="Total courses" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-            <Label fx:id="dateUpdateLabel" text="Date update" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+            <Button fx:id="loadDataBtn" mnemonicParsing="false" onAction="#handleLoadDataBtnAction" prefWidth="170.0" text="Load Data From Web" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Label fx:id="totalFacultyLabel" text="Total faculties: %d" GridPane.rowIndex="1" />
+            <Label fx:id="totalYearLabel" text="Total years: %d" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="totalStudentLabel" text="Total students: %d" GridPane.rowIndex="2" />
+            <Label fx:id="totalCourseLabel" text="Total courses: %d" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="0.0" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <Label fx:id="dateUpdateLabel" text="Date update: %s" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3">
                <font>
                   <Font name="System Italic" size="15.0" />
                </font>
             </Label>
+            <Button fx:id="clearDataBtn" mnemonicParsing="false" onAction="#handleClearDataBtnAction" prefWidth="170.0" text="Clear Local Data" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+             <Label fx:id="progressLabel" GridPane.columnSpan="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.columnIndex="4" />
+            <Label text="Supported Faculties" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0">
+               <font>
+                  <Font name="System Bold Italic" size="15.0" />
+               </font>
+            </Label>
+            <Label text="Supported Years" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="0">
+               <font>
+                  <Font name="System Bold Italic" size="15.0" />
+               </font>
+            </Label>
+            <ListView fx:id="facultyList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.rowSpan="3" />
+            <ListView fx:id="yearList" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="3" />
          </children>
          <padding>
             <Insets bottom="8.0" left="16.0" right="16.0" />
@@ -61,46 +68,57 @@
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints />
           <RowConstraints vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="individualBtn" mnemonicParsing="false" onAction="#handleIndividualBtnAction" text="Individual Monitor" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <Button fx:id="individualBtn" mnemonicParsing="false" onAction="#handleIndividualBtnAction" text="Individual Monitor" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="courseBtn" mnemonicParsing="false" onAction="#handleCourseBtnAction" text="Course Analyzer" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <Button fx:id="courseBtn" mnemonicParsing="false" onAction="#handleCourseBtnAction" text="Course Analyzer" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="facultyBtn" mnemonicParsing="false" onAction="#handleFacultyBtnAction" text="Faculty Analyzer" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <Button fx:id="facultyBtn" mnemonicParsing="false" onAction="#handleFacultyBtnAction" text="Faculty Analyzer" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Label text="Description" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+            <Label text="Details for each course" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                <font>
                   <Font name="System Italic" size="15.0" />
                </font>
             </Label>
-            <Label text="Description" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+            <Label text="Details for each faculty" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                <font>
                   <Font name="System Italic" size="15.0" />
                </font>
             </Label>
-            <Label text="Description" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+            <Label text="Details for each individual" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                <font>
                   <Font name="System Italic" size="15.0" />
                </font>
             </Label>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" />
          </children>
          <padding>
             <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
          </padding>
       </GridPane>
    </top>
+   <center>
+      <BarChart fx:id="scoreHistogram" legendSide="TOP" title="Student Score Histogram" BorderPane.alignment="CENTER">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+         <padding>
+            <Insets left="16.0" right="16.0" />
+         </padding>
+      </BarChart>
+   </center>
 </BorderPane>

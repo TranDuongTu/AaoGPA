@@ -26,16 +26,16 @@ public class AaoWebHtmlParserJsoup implements AaoWebHtmlParser {
         Elements identitySection = doc.select(NAME_SELECTOR);
         if (identitySection.size() > 0) {
             String[] buff = identitySection.get(0).text().split("-");
-            stu.setId(Integer.parseInt(buff[1].substring(5, 8)));
-            stu.setName(buff[0]);
+            stu.setStudentId(buff[1].substring(5, 13));
+            stu.setName(buff[0].trim());
         } else {
             return null;
         }
 
         // Extract GPA information
-        Map<Integer, Course> takenCourses = new HashMap<Integer, Course>();
-        Map<Integer, List<Double>> takenCoursesResult
-                = new HashMap<Integer, List<Double>>();
+        Map<String, Course> takenCourses = new HashMap<String, Course>();
+        Map<String, List<Double>> takenCoursesResult
+                = new HashMap<String, List<Double>>();
         Elements rows = doc.select(MARK_TABLEC_ROWS_SELECTOR);
         for (Element row : rows) {
             Elements tds = row.children();
@@ -48,11 +48,13 @@ public class AaoWebHtmlParserJsoup implements AaoWebHtmlParser {
                 continue;
 
             // content
-            int coId = Integer.parseInt(tds.get(0).children().get(0).text());
+            String coId = tds.get(0).children().get(0).text();
             String coName = tds.get(1).children().get(0).text();
             double coMark;
+            int credit;
             try {
                 coMark = Double.parseDouble(tds.get(6).children().get(0).text());
+                credit = Integer.parseInt(tds.get(3).children().get(0).text());
             } catch (NumberFormatException e) {
                 continue;
             }
@@ -60,8 +62,9 @@ public class AaoWebHtmlParserJsoup implements AaoWebHtmlParser {
             // tracking
             if (!takenCourses.containsKey(coId)) {
                 Course course = new Course();
-                course.setId(coId);
+                course.setCourseId(coId);
                 course.setName(coName);
+                course.setCredit(credit);
 
                 takenCourses.put(coId, course);
                 takenCoursesResult.put(coId, new ArrayList<Double>(

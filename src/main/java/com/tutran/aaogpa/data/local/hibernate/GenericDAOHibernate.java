@@ -36,7 +36,7 @@ public class GenericDAOHibernate<T extends DomainObject> implements GenericDAO<T
 
     @Override
     public void save(T object) {
-        sessionFactory.getCurrentSession().save(object);
+        sessionFactory.getCurrentSession().saveOrUpdate(object);
     }
 
     @Override

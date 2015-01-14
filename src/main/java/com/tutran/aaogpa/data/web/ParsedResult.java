@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class ParsedResult {
     private Student student;
-    private Map<Integer, Course> takenCourses;
-    private Map<Integer, List<Double>> takenCoursesResult;
+    private Map<String, Course> takenCourses;
+    private Map<String, List<Double>> takenCoursesResult;
 
     public Student getStudent() {
         return student;
@@ -19,19 +19,19 @@ public class ParsedResult {
         this.student = student;
     }
 
-    public Map<Integer, Course> getTakenCourses() {
+    public Map<String, Course> getTakenCourses() {
         return takenCourses;
     }
 
-    public void setTakenCourses(Map<Integer, Course> takenCourses) {
+    public void setTakenCourses(Map<String, Course> takenCourses) {
         this.takenCourses = takenCourses;
     }
 
-    public Map<Integer, List<Double>> getTakenCoursesResult() {
+    public Map<String, List<Double>> getTakenCoursesResult() {
         return takenCoursesResult;
     }
 
-    public void setTakenCoursesResult(Map<Integer, List<Double>> takenCoursesResult) {
+    public void setTakenCoursesResult(Map<String, List<Double>> takenCoursesResult) {
         this.takenCoursesResult = takenCoursesResult;
     }
 }
