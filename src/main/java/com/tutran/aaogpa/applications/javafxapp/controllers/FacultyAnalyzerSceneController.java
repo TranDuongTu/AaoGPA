@@ -1,6 +1,5 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
-import com.sun.istack.internal.NotNull;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
 import com.tutran.aaogpa.data.models.CourseResult;
 import com.tutran.aaogpa.data.models.Student;
@@ -42,15 +41,15 @@ public class FacultyAnalyzerSceneController extends Controller {
         // Supported input options for ListViews
         facultyList.getItems().clear();
         facultyList.getItems().add(ALL_FACULTY);
-        for (String facultyKey : dataScope.getFaculties().keySet()) {
-            String facultyName = dataScope.getFaculties().get(facultyKey);
+        for (String facultyKey : supportData.getSupportFaculties().keySet()) {
+            String facultyName = supportData.getSupportFaculties().get(facultyKey);
             facultyList.getItems().add(
                     new FacultyKeyName(facultyKey, facultyName));
         }
 
         yearList.getItems().clear();
         yearList.getItems().add(ALL_YEAR);
-        for (String year : dataScope.getSupportYears())
+        for (String year : supportData.getSupportYears())
             yearList.getItems().add(year);
 
         facultyList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -86,9 +85,9 @@ public class FacultyAnalyzerSceneController extends Controller {
             List<String> selectedYears) {
         if (selectedFaculties.contains(ALL_FACULTY)) {
             selectedFaculties.clear();
-            for (String faculty : dataScope.getFaculties().keySet())
+            for (String faculty : supportData.getSupportFaculties().keySet())
                 selectedFaculties.add(new FacultyKeyName(
-                        faculty, dataScope.getFaculties().get(faculty)));
+                        faculty, supportData.getSupportFaculties().get(faculty)));
         }
 
         Map<String, List<Student>> studentPartitions =

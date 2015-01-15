@@ -42,7 +42,7 @@ public class CourseDAOTest extends GenericDAOTest {
         Course newCourse = new Course();
         newCourse.setId(1);
         newCourse.setName("New Course");
-        courseDAO.save(newCourse);
+        courseDAO.saveOrUpdate(newCourse);
 
         List<Course> retrievedCourses =
                 courseDAO.findCoursesByName("New Course");
@@ -69,8 +69,8 @@ public class CourseDAOTest extends GenericDAOTest {
         co2.setId(1);
         co2.setName("B");
 
-        courseDAO.save(co1);
-        courseDAO.save(co2);
+        courseDAO.saveOrUpdate(co1);
+        courseDAO.saveOrUpdate(co2);
     }
 
     @Test
@@ -83,8 +83,8 @@ public class CourseDAOTest extends GenericDAOTest {
         co2.setId(2);
         co2.setName("ABABABABAB");
 
-        courseDAO.save(co1);
-        courseDAO.save(co2);
+        courseDAO.saveOrUpdate(co1);
+        courseDAO.saveOrUpdate(co2);
 
         List<Course> retrievedCourse = courseDAO.findCoursesByName("AB");
         Assert.assertTrue("Retrive: " + retrievedCourse.size() + " courses",

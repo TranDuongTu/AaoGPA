@@ -1,6 +1,6 @@
 package com.tutran.aaogpa.services;
 
-import com.tutran.aaogpa.data.DataScope;
+import com.tutran.aaogpa.data.SupportData;
 import com.tutran.aaogpa.data.local.CourseDAO;
 import com.tutran.aaogpa.data.local.CourseResultDAO;
 import com.tutran.aaogpa.data.local.StudentDAO;
@@ -20,7 +20,8 @@ import java.util.List;
  * Repository for accessing services from local database
  */
 public class LocalDataRepository {
-    private DataScope dataScope;
+    private SupportData supportData;
+
     private StudentDAO studentDAO;
     private CourseDAO courseDAO;
     private CourseResultDAO courseResultDAO;
@@ -66,13 +67,13 @@ public class LocalDataRepository {
         this.updateStatusDAO = updateStatusDAO;
     }
 
-    public DataScope getDataScope() {
-        return dataScope;
+    public SupportData getSupportData() {
+        return supportData;
     }
 
     @Autowired
-    public void setDataScope(DataScope dataScope) {
-        this.dataScope = dataScope;
+    public void setSupportData(SupportData supportData) {
+        this.supportData = supportData;
     }
 
     // ========================================================================
@@ -91,16 +92,16 @@ public class LocalDataRepository {
      */
 
     public void insertStudent(Student student) {
-        studentDAO.save(student);
+        studentDAO.saveOrUpdate(student);
     }
 
-    public int getStudentsCount() {
-        return studentDAO.size();
+    public Student getStudentById(String stuId) {
+        if (stuId == null) stuId = "";
+        return studentDAO.getStudentByID(stuId);
     }
 
-    public int getStudentsCountByIDPattern(String pattern) {
-        if (pattern == null) pattern = "";
-        return studentDAO.findStudentsCountByIDPattern(pattern);
+    public int countStudents() {
+        return studentDAO.count();
     }
 
     public List<Student> getStudentsByIDPattern(String pattern) {
@@ -108,9 +109,9 @@ public class LocalDataRepository {
         return studentDAO.findStudentsByIDPattern(pattern);
     }
 
-    public Student getStudentById(String stuId) {
-        if (stuId == null) stuId = "";
-        return studentDAO.findStudentByID(stuId);
+    public int countStudentsByIDPattern(String pattern) {
+        if (pattern == null) pattern = "";
+        return studentDAO.countStudentsByIDPattern(pattern);
     }
 
     public List<Student> getStudentsByName(String name) {
@@ -118,26 +119,21 @@ public class LocalDataRepository {
         return studentDAO.findStudentsByName(name);
     }
 
+    public int countStudentsByName(String name) {
+        if (name == null) name = "";
+        return studentDAO.countStudentsByName(name);
+    }
+
     /**
      * For Course data
      */
 
     public void insertCourse(Course course) {
-        courseDAO.save(course);
+        courseDAO.saveOrUpdate(course);
     }
 
-    public int getCoursesCount() {
-        return courseDAO.size();
-    }
-
-    public int getCoursesCountByIDPattern(String pattern) {
-        return courseDAO.findCoursesCountByIDPattern(pattern);
-    }
-
-
-    public List<Course> getCoursesByName(String name) {
-        if (name == null) name = "";
-        return courseDAO.findCoursesByName(name);
+    public int countCourses() {
+        return courseDAO.count();
     }
 
     public List<Course> getCoursesByIDPattern(String pattern) {
@@ -145,8 +141,28 @@ public class LocalDataRepository {
         return courseDAO.findCoursesByIdPattern(pattern);
     }
 
+
+    public int countCoursesByIDPattern(String pattern) {
+        if (pattern == null) pattern = "";
+        return courseDAO.countCoursesByIDPattern(pattern);
+    }
+
+    public List<Course> getCoursesByName(String name) {
+        if (name == null) name = "";
+        return courseDAO.findCoursesByName(name);
+    }
+
+    public int countCoursesByName(String name) {
+        if (name == null) name = "";
+        return courseDAO.countCoursesByName(name);
+    }
+
     public List<Course> getCoursesByCredit(int min, int max) {
         return courseDAO.findCoursesByCredit(min, max);
+    }
+
+    public int countCoursesByCredit(int min, int max) {
+        return courseDAO.countCoursesByCredit(min, max);
     }
 
     /**
@@ -154,17 +170,11 @@ public class LocalDataRepository {
      */
 
     public void insertCourseResult(CourseResult courseResult) {
-        if (courseResult.getResult() > 10) courseResult.setResult(0);
-        courseResultDAO.save(courseResult);
+        courseResultDAO.saveOrUpdate(courseResult);
     }
 
     public List<CourseResult> getAllCourseResults() {
         return courseResultDAO.getAll();
-    }
-
-    public List<CourseResult> getBestCourseResultsOfCourse(String coId, int maxResults) {
-        if (coId == null) coId = "";
-        return courseResultDAO.findBestCourseResultsOfCourseId(coId, maxResults);
     }
 
     public List<CourseResult> getAllCourseResultsOfCourse(String coId) {
@@ -177,6 +187,20 @@ public class LocalDataRepository {
         return courseResultDAO.findCourseResultsOfStudentId(stuId);
     }
 
+    public List<CourseResult> getBestCourseResultsOfCourse(
+            String coId, int maxResults) {
+        if (coId == null) coId = "";
+        return courseResultDAO.findBestCourseResultsOfCourseId(
+                coId, maxResults);
+    }
+
+    public List<CourseResult> getBestCourseResultsOfStudent(
+            String stuId, int maxResults) {
+        if (stuId == null) stuId = "";
+        return courseResultDAO.findBestCourseResultsOfStudentId(
+                stuId, maxResults);
+    }
+
     /**
      * Data Status
      */
@@ -184,10 +208,10 @@ public class LocalDataRepository {
     public Date getLastDateUpdate() {
         SimpleDateFormat formatString = new SimpleDateFormat("yyyyMMddHHmmSS");
         UpdateStatus lastUpdate = updateStatusDAO.getLastUpdate();
-        if (lastUpdate == null) return null;
+
         try {
-            return formatString.parse(
-                    String.valueOf(lastUpdate.getUpdateDate()));
+            return lastUpdate != null ? formatString.parse(
+                    String.valueOf(lastUpdate.getUpdateDate())) : null;
         } catch (ParseException e) {
             return null;
         }
@@ -199,6 +223,6 @@ public class LocalDataRepository {
     }
 
     public void insertOrUpdateStatus(UpdateStatus updateStatus) {
-        updateStatusDAO.save(updateStatus);
+        updateStatusDAO.saveOrUpdate(updateStatus);
     }
 }

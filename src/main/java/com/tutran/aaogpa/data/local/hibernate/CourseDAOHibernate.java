@@ -2,7 +2,6 @@ package com.tutran.aaogpa.data.local.hibernate;
 
 import com.tutran.aaogpa.data.local.CourseDAO;
 import com.tutran.aaogpa.data.models.Course;
-import org.hibernate.Query;
 
 import java.util.List;
 
@@ -14,52 +13,74 @@ public class CourseDAOHibernate extends GenericDAOHibernate<Course>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<Course> findCoursesByName(String name) {
-        Query query = getSessionFactory()
-                .getCurrentSession()
+    public Course getCourseByID(String id) {
+        List result = getSessionFactory().getCurrentSession()
                 .createQuery("FROM " + getType().getName()
-                        + " C WHERE C.name LIKE :name");
-        query.setParameter("name", "%" + name + "%");
-        return query.list();
+                        + " C WHERE C.courseId = :id")
+                .setParameter("id", id)
+                .list();
+        return result != null && result.size() == 1 ?
+            (Course) result.get(0) : null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Course> findCoursesByIdPattern(String pattern) {
         return getSessionFactory().getCurrentSession()
-                .createQuery("FROM Course C WHERE C.courseId LIKE :pattern")
+                .createQuery("FROM " + getType().getName()
+                        + " C WHERE C.courseId LIKE :pattern")
                 .setParameter("pattern", pattern)
                 .list();
     }
 
     @Override
-    public int findCoursesCountByIDPattern(String pattern) {
-        List list = getSessionFactory().getCurrentSession()
-                .createQuery("SELECT count(*) FROM Course C WHERE C.courseId LIKE :pattern")
-                .setParameter("pattern", pattern)
-                .list();
-        if (list != null && list.size() == 1)
-            return ((Long) list.get(0)).intValue();
-        return 0;
-    }
-
-    @Override
-    public Course findCourseById(String id) {
+    public int countCoursesByIDPattern(String pattern) {
         List result = getSessionFactory().getCurrentSession()
-                .createQuery("FROM Course C WHERE C.courseId = :id")
-                .setParameter("id", id)
+                .createQuery("SELECT count(*) FROM " + getType().getName()
+                        + " C " + "WHERE C.courseId LIKE :pattern")
+                .setParameter("pattern", pattern)
                 .list();
-        if (result != null && result.size() == 1)
-            return (Course) result.get(0);
-        return null;
+        return result != null && result.size() == 1 ?
+            ((Long) result.get(0)).intValue() : 0;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Course> findCoursesByName(String name) {
+        return getSessionFactory().getCurrentSession()
+                .createQuery("FROM " + getType().getName()
+                        + " C WHERE C.name LIKE :name")
+                .setParameter("name", "%" + name + "%")
+                .list();
+    }
+
+    @Override
+    public int countCoursesByName(String name) {
+        List result = getSessionFactory().getCurrentSession()
+                .createQuery("SELECT count(*) FROM " + getType().getName()
+                        + " C " + "WHERE C.name LIKE :name")
+                .setParameter("name", "%" + name + "%")
+                .list();
+        return result != null && result.size() == 1 ?
+                ((Long) result.get(0)).intValue() : 0;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Course> findCoursesByCredit(int min, int max) {
         return getSessionFactory().getCurrentSession()
-                .createQuery("FROM Course C WHERE C.credit >= :min AND C.credit <= :max")
+                .createQuery("FROM " + getType().getName() + " C "
+                        + "WHERE C.credit >= :min AND C.credit <= :max")
                 .list();
+    }
+
+    @Override
+    public int countCoursesByCredit(int min, int max) {
+        List result = getSessionFactory().getCurrentSession()
+                .createQuery("SELECT count(*) FROM " + getType().getName() + " C "
+                        + "WHERE C.credit >= :min AND C.credit <= :max")
+                .list();
+        return result != null && result.size() == 1 ?
+                ((Long) result.get(0)).intValue() : 0;
     }
 }

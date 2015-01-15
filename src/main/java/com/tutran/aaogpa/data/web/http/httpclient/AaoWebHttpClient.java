@@ -1,6 +1,5 @@
 package com.tutran.aaogpa.data.web.http.httpclient;
 
-import com.tutran.aaogpa.services.WebDataRepository;
 import com.tutran.aaogpa.data.web.AaoWeb;
 import com.tutran.aaogpa.data.web.exceptions.EncodingException;
 import org.apache.http.HttpResponse;
@@ -21,21 +20,30 @@ import java.util.ArrayList;
 public class AaoWebHttpClient implements AaoWeb {
 
     @Override
-    public String getResultsBlocking(String id) {
-        HttpClient client = HttpClientBuilder.create().build();
+    public String getResultsBlocking(String stuId) {
+        return getHtmlTextResponse(makeRequest(stuId));
+    }
+
+    private HttpPost makeRequest(String stuId) {
         HttpPost request = new HttpPost(URL);
 
-        // add request params
+        /* Two parameters needed */
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("mssv", id));
+        params.add(new BasicNameValuePair("mssv", stuId));
         params.add(new BasicNameValuePair("HOC_KY", "d.hk_nh is not NULL"));
+
         try {
             request.setEntity(new UrlEncodedFormEntity(params));
         } catch (UnsupportedEncodingException e) {
             throw new EncodingException();
         }
 
-        // making request and fetch result
+        return request;
+    }
+
+    private String getHtmlTextResponse(HttpPost request) {
+        HttpClient client = HttpClientBuilder.create().build();
+
         StringBuilder result = new StringBuilder();
         try {
             HttpResponse response = client.execute(request);
@@ -52,10 +60,5 @@ public class AaoWebHttpClient implements AaoWeb {
         }
 
         return result.toString();
-    }
-
-    @Override
-    public void getResultsNonBlocking(WebDataRepository.Listener callback) {
-
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class GenericDAOHibernate<T extends DomainObject> implements GenericDAO<T> {
+public class GenericDAOHibernate<T extends DomainObject>
+        implements GenericDAO<T> {
+
     private Class<T> type;
     private SessionFactory sessionFactory;
 
@@ -35,7 +37,7 @@ public class GenericDAOHibernate<T extends DomainObject> implements GenericDAO<T
     }
 
     @Override
-    public void save(T object) {
+    public void saveOrUpdate(T object) {
         sessionFactory.getCurrentSession().saveOrUpdate(object);
     }
 
@@ -65,12 +67,11 @@ public class GenericDAOHibernate<T extends DomainObject> implements GenericDAO<T
     }
 
     @Override
-    public int size() {
+    public int count() {
         List list = sessionFactory.getCurrentSession()
                 .createQuery("SELECT count(*) FROM " + type.getName())
                 .list();
-        if (list != null && list.size() == 1)
-            return ((Long) list.get(0)).intValue();
-        return 0;
+        return list != null && list.size() == 1 ?
+                ((Long) list.get(0)).intValue() : 0;
     }
 }

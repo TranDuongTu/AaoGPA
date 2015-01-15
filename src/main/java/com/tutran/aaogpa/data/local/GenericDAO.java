@@ -7,10 +7,10 @@ import java.util.List;
 
 @Transactional
 public interface GenericDAO<T extends DomainObject> {
-    void save(T object);
+    void saveOrUpdate(T object);
     void delete(T object);
     T get(long id);
     List<T> getAll();
     void deleteAll();
-    int size();
+    int count();
 }

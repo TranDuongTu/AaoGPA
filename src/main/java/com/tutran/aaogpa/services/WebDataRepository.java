@@ -19,20 +19,7 @@ public class WebDataRepository {
         this.aaoWebHtmlParser = aaoWebHtmlParser;
     }
 
-    public ParsedResult getMarkOfStudentBlocking(String id) {
-        return aaoWebHtmlParser.parse(aaoWeb.getResultsBlocking(id));
-    }
-
-    public void getMarkOfStudentNonBlocking(final Listener listener) {
-        aaoWeb.getResultsNonBlocking(new Listener() {
-            @Override
-            public void onFinishOneStudent(String html) {
-                listener.onFinishOneStudent(html);
-            }
-        });
-    }
-
-    public static interface Listener {
-        void onFinishOneStudent(String html);
+    public ParsedResult getMarkOfStudentBlocking(String stuId) {
+        return aaoWebHtmlParser.parse(aaoWeb.getResultsBlocking(stuId));
     }
 }

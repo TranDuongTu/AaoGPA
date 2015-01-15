@@ -1,6 +1,6 @@
 package com.tutran.aaogpa.applications.javafxapp;
 
-import com.tutran.aaogpa.data.DataScope;
+import com.tutran.aaogpa.data.SupportData;
 import com.tutran.aaogpa.applications.javafxapp.controllers.Controller;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneLayout;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class FXApplication extends Application
         implements com.tutran.aaogpa.applications.Application {
-    private DataScope dataScope;
+    private SupportData supportData;
 
     private LocalDataRepository localDataRepository;
     private WebDataRepository webDataRepository;
@@ -29,14 +29,14 @@ public class FXApplication extends Application
     @Override
     public void start(final Stage primaryStage) throws Exception {
         ApplicationContext context = new ClassPathXmlApplicationContext(
-                "classpath:spring/application-context.xml"
+                "classpath:spring_context/application-context.xml"
         );
         localDataRepository = context.getBean(
                 "localDataRepository", LocalDataRepository.class);
         webDataRepository = context.getBean(
                 "webDataRepository", WebDataRepository.class);
-        dataScope = context.getBean(
-                "dataScope", DataScope.class);
+        supportData = context.getBean(
+                "dataScope", SupportData.class);
 
         Map<SceneID, Scene> scenes = createScenes(primaryStage);
 
@@ -72,7 +72,7 @@ public class FXApplication extends Application
 
             Controller controller = loader.getController();
             if (controller != null) {
-                controller.setDataScope(dataScope);
+                controller.setSupportData(supportData);
                 controller.setLocalDataRepository(localDataRepository);
                 controller.setWebDataRepository(webDataRepository);
                 controller.setControllerActionListener(listener);

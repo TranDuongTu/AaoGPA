@@ -70,8 +70,8 @@ public class OverviewSceneController extends Controller {
     protected void handleLoadDataBtnAction(ActionEvent actionEvent) {
         disableScene();
         final List<String> facultyStrings =
-                new ArrayList<String>(dataScope.getFaculties().keySet());
-        final List<String> years = dataScope.getSupportYears();
+                new ArrayList<String>(supportData.getSupportFaculties().keySet());
+        final List<String> years = supportData.getSupportYears();
         final int workload = estimateWorkload(facultyStrings, years);
 
         Task<Void> updateTask = createBackgroundDataCrawlingTask(
@@ -116,20 +116,19 @@ public class OverviewSceneController extends Controller {
 
     private void setTotalStudentAndCourseLabels() {
         totalStudentLabel.setText("Total students: "
-                + localDataRepository.getStudentsCount());
+                + localDataRepository.countStudents());
         totalCourseLabel.setText("Total courses: "
-                + localDataRepository.getCoursesCount());
+                + localDataRepository.countCourses());
     }
 
     private void setTotalFacultyAndYearLabels() {
         int totalFaculties = 0, totalYears = 0;
-        for (String faculty : dataScope.getFaculties().keySet()) {
-            if (localDataRepository.getStudentsCountByIDPattern(faculty + "%") != 0)
+        for (String faculty : supportData.getSupportFaculties().keySet()) {
+            if (localDataRepository.countStudentsByIDPattern(faculty + "%") != 0)
                 totalFaculties += 1;
         }
-        for (String year : dataScope.getSupportYears()) {
-            if (localDataRepository.getStudentsCountByIDPattern(
-                    "_" + year.substring(2) + "%") > 0)
+        for (String year : supportData.getSupportYears()) {
+            if (localDataRepository.countStudentsByIDPattern("_" + year.substring(2) + "%") > 0)
                 totalYears += 1;
         }
         totalFacultyLabel.setText("Total faculties: " + totalFaculties);
@@ -139,9 +138,9 @@ public class OverviewSceneController extends Controller {
     private void setListViewsForSupportedFacultyAndYears() {
         facultyList.getItems().clear();
         yearList.getItems().clear();
-        for (String facultyName : dataScope.getFaculties().values())
+        for (String facultyName : supportData.getSupportFaculties().values())
             facultyList.getItems().add(0, facultyName);
-        for (String year : dataScope.getSupportYears())
+        for (String year : supportData.getSupportYears())
             yearList.getItems().add(0, year);
     }
 
@@ -288,10 +287,9 @@ public class OverviewSceneController extends Controller {
         List<CourseResult> result = new ArrayList<CourseResult>();
 
         Student stu = parsedResult.getStudent();
-        for (String coId : parsedResult.getTakenCourses().keySet()) {
-            Course course = parsedResult.getTakenCourses().get(coId);
+        for (Course course : parsedResult.getTakenCourses().keySet()) {
             Double maxScore = Collections.max(
-                    parsedResult.getTakenCoursesResult().get(coId));
+                    parsedResult.getTakenCourses().get(course));
 
             CourseResult cr = new CourseResult();
             cr.setStudent(stu);

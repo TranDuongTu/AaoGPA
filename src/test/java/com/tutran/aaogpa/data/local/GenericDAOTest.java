@@ -36,7 +36,7 @@ public abstract class GenericDAOTest {
         courseResultDAO.deleteAll();
 
         for (CourseResult cr : testCrs) {
-            courseResultDAO.save(cr);
+            courseResultDAO.saveOrUpdate(cr);
         }
     }
 

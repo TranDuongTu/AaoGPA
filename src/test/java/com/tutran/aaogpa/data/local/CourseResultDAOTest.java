@@ -30,7 +30,7 @@ public class CourseResultDAOTest extends GenericDAOTest {
         cr.setCourse(co);
         cr.setResult(9.5);
 
-        courseResultDAO.save(cr);
+        courseResultDAO.saveOrUpdate(cr);
 
         List<CourseResult> retrievedCrs =
                 courseResultDAO.findCourseResultsOfStudentId(stu.getStudentId());

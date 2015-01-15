@@ -2,7 +2,6 @@ package com.tutran.aaogpa.data.local.hibernate;
 
 import com.tutran.aaogpa.data.local.UpdateStatusDAO;
 import com.tutran.aaogpa.data.models.UpdateStatus;
-import org.hibernate.Query;
 
 import java.util.List;
 
@@ -15,14 +14,12 @@ public class UpdateStatusDAOHibernate extends GenericDAOHibernate<UpdateStatus>
 
     @Override
     public UpdateStatus getLastUpdate() {
-        Query query = getSessionFactory().getCurrentSession()
-                .createQuery(
-                    "FROM UpdateStatus US ORDER BY US.updateDate DESC"
-                ).setMaxResults(1);
-        List result = query.list();
-        if (result == null || result.size() == 0)
-            return null;
-        else
-            return (UpdateStatus) result.get(0);
+        List result = getSessionFactory().getCurrentSession()
+                .createQuery("FROM " + getType().getName() + " US "
+                                + "ORDER BY US.updateDate DESC")
+                .setMaxResults(1)
+                .list();
+        return result != null && result.size() == 1 ?
+                (UpdateStatus) result.get(0) : null;
     }
 }

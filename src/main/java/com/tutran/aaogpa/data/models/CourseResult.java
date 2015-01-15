@@ -31,9 +31,6 @@ public class CourseResult extends DomainObject {
 
     @Override
     public String toString() {
-        return String.format(
-                "[Student: %s; Course: %s; Result: %f]",
-                student, course, result
-        );
+        return String.format("%s - %s - %f]", student, course, result);
     }
 }

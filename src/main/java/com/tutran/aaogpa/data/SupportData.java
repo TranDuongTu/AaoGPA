@@ -3,16 +3,16 @@ package com.tutran.aaogpa.data;
 import java.util.List;
 import java.util.Map;
 
-public class DataScope {
-    private Map<String, String> faculties;
+public class SupportData {
+    private Map<String, String> supportFaculties;
     private List<String> supportYears;
 
-    public Map<String, String> getFaculties() {
-        return faculties;
+    public Map<String, String> getSupportFaculties() {
+        return supportFaculties;
     }
 
-    public void setFaculties(Map<String, String> faculties) {
-        this.faculties = faculties;
+    public void setSupportFaculties(Map<String, String> supportFaculties) {
+        this.supportFaculties = supportFaculties;
     }
 
     public List<String> getSupportYears() {

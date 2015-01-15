@@ -7,10 +7,11 @@ import java.util.List;
 
 @Transactional
 public interface StudentDAO extends GenericDAO<Student> {
-    Student findStudentByID(String stuID);
+    Student getStudentByID(String stuID);
 
     List<Student> findStudentsByIDPattern(String pattern);
-    int findStudentsCountByIDPattern(String idPattern);
+    int countStudentsByIDPattern(String pattern);
 
     List<Student> findStudentsByName(String name);
+    int countStudentsByName(String name);
 }

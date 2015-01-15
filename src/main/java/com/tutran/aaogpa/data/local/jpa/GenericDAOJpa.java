@@ -42,7 +42,7 @@ public class GenericDAOJpa<T extends DomainObject> implements GenericDAO<T> {
     }
 
     @Override
-    public void save(T object) {
+    public void saveOrUpdate(T object) {
         entityManager.persist(object);
     }
 
@@ -59,7 +59,7 @@ public class GenericDAOJpa<T extends DomainObject> implements GenericDAO<T> {
     }
 
     @Override
-    public int size() {
+    public int count() {
         return 0;
     }
 }

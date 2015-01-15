@@ -12,7 +12,6 @@
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
     <context:annotation-config />
-
     <tx:annotation-driven />
 
     <!-- Initialization for data source -->
@@ -24,15 +23,15 @@
         <property name="password" value="root" />
     </bean>
 
-    <!-- Factory for hibernate integration -->
+    <!-- Persistent layer with Hibernate integration -->
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="mappingResources">
             <list>
-                <value>hibernate/mappings/Course.hbm.xml</value>
-                <value>hibernate/mappings/Student.hbm.xml</value>
-                <value>hibernate/mappings/CourseResult.hbm.xml</value>
-                <value>hibernate/mappings/UpdateStatus.hbm.xml</value>
+                <value>spring_context/hibernate_mappings/Course.hbm.xml</value>
+                <value>spring_context/hibernate_mappings/Student.hbm.xml</value>
+                <value>spring_context/hibernate_mappings/CourseResult.hbm.xml</value>
+                <value>spring_context/hibernate_mappings/UpdateStatus.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -47,7 +46,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
-    <!-- DAO objects -->
+    <!-- Persistent layer with JPA conformed implementation -->
+    <!-- TODO: future support -->
+
+    <!-- DAO objects (Repositories will autowire these objects) -->
     <bean id="studentDAO" class="com.tutran.aaogpa.data.local.hibernate.StudentDAOHibernate" />
     <bean id="courseDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseDAOHibernate" />
     <bean id="courseResultDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseResultDAOHibernate" />
@@ -61,17 +63,26 @@
     <!-- Local Data Repository -->
     <bean id="localDataRepository" class="com.tutran.aaogpa.services.LocalDataRepository" />
 
-    <!-- Application configs -->
-    <bean id="dataScope" class="com.tutran.aaogpa.data.DataScope">
-        <property name="faculties">
+    <!-- Supported faculties and years -->
+    <bean id="dataScope" class="com.tutran.aaogpa.data.SupportData">
+        <property name="supportFaculties">
             <map>
+                <entry key="2" value="Cơ khí" />
+                <entry key="3" value="Kỹ thuật địa chất dầu khí" />
+                <entry key="4" value="Điện - Điện tử" />
                 <entry key="5" value="KH &amp; KT Máy Tính" />
-                <entry key="8" value="Kỹ thuật xây dựng" />
+                <entry key="6" value="Kỹ thuật hóa học" />
                 <entry key="7" value="Quản lý công nghiệp" />
+                <entry key="8" value="Kỹ thuật xây dựng" />
+                <entry key="9" value="Môi trường và tài nguyên" />
+                <entry key="G" value="Kỹ thuật giao thông" />
+                <entry key="K" value="Khoa học ứng dụng" />
+                <entry key="V" value="Công nghệ vật liệu" />
             </map>
         </property>
         <property name="supportYears">
             <list>
+                <value>2009</value>
                 <value>2010</value>
                 <value>2011</value>
                 <value>2012</value>

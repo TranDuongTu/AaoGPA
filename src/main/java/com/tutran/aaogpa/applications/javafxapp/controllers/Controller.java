@@ -1,7 +1,7 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
-import com.tutran.aaogpa.data.DataScope;
+import com.tutran.aaogpa.data.SupportData;
 import com.tutran.aaogpa.services.LocalDataRepository;
 import com.tutran.aaogpa.services.WebDataRepository;
 
@@ -11,15 +11,15 @@ import com.tutran.aaogpa.services.WebDataRepository;
 public abstract class Controller {
     private ControllerActionListener controllerActionListener;
 
-    protected DataScope dataScope;
+    protected SupportData supportData;
 
     protected LocalDataRepository localDataRepository;
     protected WebDataRepository webDataRepository;
 
     public abstract void startScene();
 
-    public void setDataScope(DataScope dataScope) {
-        this.dataScope = dataScope;
+    public void setSupportData(SupportData supportData) {
+        this.supportData = supportData;
     }
 
     public void setLocalDataRepository(LocalDataRepository localDataRepository) {
