@@ -1,19 +1,17 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
+import com.tutran.aaogpa.applications.javafxapp.charts.ChartFactory;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
 import com.tutran.aaogpa.data.models.Course;
 import com.tutran.aaogpa.data.models.CourseResult;
 import com.tutran.aaogpa.data.models.Student;
 import com.tutran.aaogpa.data.models.UpdateStatus;
 import com.tutran.aaogpa.data.web.ParsedResult;
-import com.tutran.aaogpa.services.Statistician;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
@@ -24,8 +22,6 @@ public class OverviewSceneController extends Controller {
 
     private static final int STUDENT_NUMBER_LENGTH = 5;
     private static final int MAX_STUDENT_NUMBER = 10000;
-
-    private static final int NUMBER_OF_BIN = 20;
 
     // ========================================================================
     // UI CONTROLS
@@ -319,36 +315,14 @@ public class OverviewSceneController extends Controller {
     }
 
     private void updateChart() {
-        if (!localDataRepository.getLastUpdateStatus())
-            return;
-
         scoreHistogram.getData().clear();
 
-        List<CourseResult> allResults = localDataRepository.getAllCourseResults();
-        Map<Student, Double> studentGPAs = Statistician.calculateStudentGPAs(allResults);
-        List<List<Student>> histogram = Statistician.makeHistogram(studentGPAs, NUMBER_OF_BIN);
+        Map<Student, Double> studentGPAs =
+                localDataRepository.getStudentsGpaByIDPattern("%%");
+        Map<String, Map<Student, Double>> gpaPerCategory =
+                new HashMap<String, Map<Student, Double>>();
+        gpaPerCategory.put("All Student", studentGPAs);
 
-        double interval = 10.0 / NUMBER_OF_BIN;
-        List<String> intervals = new ArrayList<String>();
-        for (int i = 0; i < NUMBER_OF_BIN; i++) {
-            intervals.add("[" + (i*interval) + ", " + ((i + 1) * interval) + ")");
-        }
-
-        Axis<String> xAxis = scoreHistogram.getXAxis();
-        Axis<Number> yAxis = scoreHistogram.getYAxis();
-        xAxis.setLabel("Score intervals");
-        yAxis.setLabel("Frequency");
-        yAxis.setMinHeight(0);
-
-        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-        series.setName("All Student");
-        for (int i = 0; i < NUMBER_OF_BIN; i++) {
-            String category = intervals.get(i);
-            Number size = histogram.get(i).size();
-
-            series.getData().add(new XYChart.Data<String, Number>(category, size));
-        }
-
-        scoreHistogram.getData().add(series);
+        ChartFactory.makeHistogram(scoreHistogram, gpaPerCategory);
     }
 }

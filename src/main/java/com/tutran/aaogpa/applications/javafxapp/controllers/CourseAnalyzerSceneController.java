@@ -1,16 +1,13 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
+import com.tutran.aaogpa.applications.javafxapp.charts.ChartFactory;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
 import com.tutran.aaogpa.data.models.Course;
 import com.tutran.aaogpa.data.models.CourseResult;
 import com.tutran.aaogpa.data.models.Student;
-import com.tutran.aaogpa.services.Statistician;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -22,7 +19,6 @@ import java.util.*;
 public class CourseAnalyzerSceneController extends Controller {
 
     private static final int NUMBER_OF_BEST = 15;
-    private static final int NUMBER_OF_BIN = 20;
 
     // ========================================================================
     // UI CONTROLS
@@ -97,6 +93,7 @@ public class CourseAnalyzerSceneController extends Controller {
         Map<Student, Double> bestStudents = topBestStudents(students, NUMBER_OF_BEST);
 
         updateBestStudentsList(bestStudents);
+
         updateChart(students);
     }
 
@@ -112,35 +109,12 @@ public class CourseAnalyzerSceneController extends Controller {
     }
 
     private void updateChart(Map<Student, Double> students) {
-        if (!localDataRepository.getLastUpdateStatus())
-            return;
+        Map<String, Map<Student, Double>> gpaPerCategory =
+                new HashMap<String, Map<Student, Double>>();
+        gpaPerCategory.put("All student", students);
 
         coursesHistogramChart.getData().clear();
-
-        List<List<Student>> histogram = Statistician.makeHistogram(students, NUMBER_OF_BIN);
-
-        double interval = 10.0 / NUMBER_OF_BIN;
-        List<String> intervals = new ArrayList<String>();
-        for (int i = 0; i < NUMBER_OF_BIN; i++) {
-            intervals.add("[" + (i*interval) + ", " + ((i + 1) * interval) + ")");
-        }
-
-        Axis<String> xAxis = coursesHistogramChart.getXAxis();
-        Axis<Number> yAxis = coursesHistogramChart.getYAxis();
-        xAxis.setLabel("Score intervals");
-        yAxis.setLabel("Frequency");
-        yAxis.setMinHeight(0);
-
-        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-        series.setName("All Student");
-        for (int i = 0; i < NUMBER_OF_BIN; i++) {
-            String category = intervals.get(i);
-            Number size = histogram.get(i).size();
-
-            series.getData().add(new XYChart.Data<String, Number>(category, size));
-        }
-
-        coursesHistogramChart.getData().add(series);
+        ChartFactory.makeHistogram(coursesHistogramChart, gpaPerCategory);
     }
 
     private Map<Student, Double> findStudentsFromCourse(Course course) {

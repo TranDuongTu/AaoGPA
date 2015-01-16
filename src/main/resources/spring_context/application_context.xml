@@ -54,6 +54,7 @@
     <bean id="courseDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseDAOHibernate" />
     <bean id="courseResultDAO" class="com.tutran.aaogpa.data.local.hibernate.CourseResultDAOHibernate" />
     <bean id="updateStatusDAO" class="com.tutran.aaogpa.data.local.hibernate.UpdateStatusDAOHibernate" />
+    <bean id="storeProceduresDAO" class="com.tutran.aaogpa.data.local.hibernate.StoreProceduresDAOHibernate" />
 
     <!-- Web Repository -->
     <bean id="aaoWeb" class="com.tutran.aaogpa.data.web.http.httpclient.AaoWebHttpClient" />

@@ -1,24 +1,22 @@
 package com.tutran.aaogpa.applications.javafxapp.controllers;
 
+import com.tutran.aaogpa.applications.javafxapp.charts.ChartFactory;
 import com.tutran.aaogpa.applications.javafxapp.scenes.SceneID;
-import com.tutran.aaogpa.data.models.CourseResult;
 import com.tutran.aaogpa.data.models.Student;
-import com.tutran.aaogpa.services.Statistician;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FacultyAnalyzerSceneController extends Controller {
-
-    private static final int NUMBER_OF_BIN = 20;
 
     private static final String ALL_YEAR = "All";
     private static final FacultyKeyName ALL_FACULTY =
@@ -62,10 +60,8 @@ public class FacultyAnalyzerSceneController extends Controller {
 
     @FXML
     protected void handleCompareBtnAction(ActionEvent e) {
-        List<FacultyKeyName> selectedFaculties =
-                facultyList.getSelectionModel().getSelectedItems();
-        List<String> selectedYears =
-                yearList.getSelectionModel().getSelectedItems();
+        List<FacultyKeyName> selectedFaculties = getSelectedFaculties();
+        List<String> selectedYears = getSelectedYears();
         if (selectedFaculties == null || selectedFaculties.size() == 0
                 || selectedYears == null || selectedYears.size() == 0) {
             Alert alertDialog = new Alert(Alert.AlertType.WARNING);
@@ -76,13 +72,32 @@ public class FacultyAnalyzerSceneController extends Controller {
             return;
         }
 
-        updateCompareHistogram(
-                getStudentsPerSeries(selectedFaculties, selectedYears));
+        compareHistogram.getData().clear();
+        ChartFactory.makeHistogram(compareHistogram,
+                getStudentGPAsPerCategory(selectedFaculties, selectedYears));
     }
 
-    private Map<String, Map<Student, Double>> getStudentsPerSeries(
-            List<FacultyKeyName> selectedFaculties,
-            List<String> selectedYears) {
+    private List<FacultyKeyName> getSelectedFaculties() {
+        List<FacultyKeyName> result = new ArrayList<FacultyKeyName>();
+        for (FacultyKeyName facultyKeyName :
+                facultyList.getSelectionModel().getSelectedItems()) {
+            result.add(facultyKeyName);
+        }
+        return result;
+    }
+
+    private List<String> getSelectedYears() {
+        List<String> result = new ArrayList<String>();
+        for (String year : yearList.getSelectionModel().getSelectedItems()) {
+            result.add(year);
+        }
+        return result;
+    }
+
+    private Map<String, Map<Student, Double>> getStudentGPAsPerCategory(
+            List<FacultyKeyName> selectedFaculties, List<String> selectedYears) {
+
+        // Get final list of faculties to be analyzed
         if (selectedFaculties.contains(ALL_FACULTY)) {
             selectedFaculties.clear();
             for (String faculty : supportData.getSupportFaculties().keySet())
@@ -90,73 +105,27 @@ public class FacultyAnalyzerSceneController extends Controller {
                         faculty, supportData.getSupportFaculties().get(faculty)));
         }
 
-        Map<String, List<Student>> studentPartitions =
-                new HashMap<String, List<Student>>();
+        // Obtain GPAs for each category
+        Map<String, Map<Student, Double>> result =
+                new HashMap<String, Map<Student, Double>>();
         if (selectedYears.contains(ALL_YEAR)) {
             for (FacultyKeyName faculty : selectedFaculties){
-                studentPartitions.put(faculty.getName(),
-                        localDataRepository.getStudentsByIDPattern(
+                result.put(faculty.getName(),
+                        localDataRepository.getStudentsGpaByIDPattern(
                                 faculty.getKey() + "%"));
             }
         } else {
             for (String year : selectedYears) {
                 for (FacultyKeyName faculty : selectedFaculties) {
                     String categoryName = faculty.getName() + " - " + year;
-                    studentPartitions.put(categoryName,
-                            localDataRepository.getStudentsByIDPattern(
+                    result.put(categoryName,
+                            localDataRepository.getStudentsGpaByIDPattern(
                                     faculty.getKey() + year.substring(2) + "%"));
                 }
             }
         }
 
-        Map<String, Map<Student, Double>> result =
-                new HashMap<String, Map<Student, Double>>();
-        for (String category : studentPartitions.keySet()) {
-            List<CourseResult> allCRs = new ArrayList<CourseResult>();
-            for (Student student : studentPartitions.get(category))
-                allCRs.addAll(localDataRepository.getAllCourseResultsOfStudent(student.getStudentId()));
-            result.put(category, Statistician.calculateStudentGPAs(allCRs));
-        }
-
         return result;
-    }
-
-    private void updateCompareHistogram(
-            Map<String, Map<Student, Double>> studentsPerSeries) {
-        if (!localDataRepository.getLastUpdateStatus()) return;
-        compareHistogram.getData().clear();
-
-        // Config axis
-        Axis<String> xAxis = compareHistogram.getXAxis();
-        Axis<Number> yAxis = compareHistogram.getYAxis();
-        xAxis.setLabel("Score intervals");
-        yAxis.setLabel("Frequency");
-        yAxis.setMinHeight(0);
-
-        // categories for x-axis
-        double interval = 10.0 / NUMBER_OF_BIN;
-        List<String> intervals = new ArrayList<String>();
-        for (int i = 0; i < NUMBER_OF_BIN; i++) {
-            intervals.add("[" + (i*interval) + ", "
-                    + ((i + 1) * interval) + ")");
-        }
-
-        // create series
-        for (String seriesName : studentsPerSeries.keySet()) {
-            List<List<Student>> histogram = Statistician.makeHistogram(
-                    studentsPerSeries.get(seriesName), NUMBER_OF_BIN);
-            XYChart.Series<String, Number> series =
-                    new XYChart.Series<String, Number>();
-            series.setName(seriesName);
-            for (int i = 0; i < NUMBER_OF_BIN; i++) {
-                String category = intervals.get(i);
-                Number size = histogram.get(i).size();
-
-                series.getData().add(
-                        new XYChart.Data<String, Number>(category, size));
-            }
-            compareHistogram.getData().add(series);
-        }
     }
 
     @FXML

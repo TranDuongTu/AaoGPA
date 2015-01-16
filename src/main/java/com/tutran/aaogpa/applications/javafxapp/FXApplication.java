@@ -29,7 +29,7 @@ public class FXApplication extends Application
     @Override
     public void start(final Stage primaryStage) throws Exception {
         ApplicationContext context = new ClassPathXmlApplicationContext(
-                "classpath:spring_context/application-context.xml"
+                "classpath:spring_context/application_context.xml"
         );
         localDataRepository = context.getBean(
                 "localDataRepository", LocalDataRepository.class);
