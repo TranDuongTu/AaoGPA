@@ -4,7 +4,9 @@ import com.tutran.aaogpa.data.local.StudentDAO;
 import com.tutran.aaogpa.data.models.Student;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class StudentDAOHibernate
@@ -23,6 +25,16 @@ public class StudentDAOHibernate
                 .list();
         return result != null && result.size() == 1 ?
                 (Student) result.get(0) : null;
+    }
+
+    @Override
+    public Map<String, Integer> getStudentIDs() {
+        List<Student> students = getAll();
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        for (Student student : students)
+            result.put(student.getStudentId(), student.getId());
+        return result;
     }
 
     @Override

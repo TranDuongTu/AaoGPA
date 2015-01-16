@@ -88,11 +88,12 @@ public class AaoWebHtmlParserJsoup implements AaoWebHtmlParser {
             if (rowResult == null) continue;
 
             if (!result.containsKey(rowResult.getFirst())) {
-                result.put(rowResult.getFirst(),
-                        Arrays.asList(rowResult.getSecond()));
+                List<Double> initialList = new ArrayList<Double>();
+                initialList.add(rowResult.getSecond());
+
+                result.put(rowResult.getFirst(), initialList);
             } else {
-                result.get(rowResult.getFirst())
-                        .add(rowResult.getSecond());
+                result.get(rowResult.getFirst()).add(rowResult.getSecond());
             }
         }
 

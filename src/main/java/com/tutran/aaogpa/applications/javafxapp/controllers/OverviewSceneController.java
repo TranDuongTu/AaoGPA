@@ -28,7 +28,7 @@ public class OverviewSceneController extends Controller {
     // ========================================================================
 
     @FXML
-    private Button loadDataBtn, clearDataBtn,
+    private Button continueLoadDataBtn, refreshDataBtn,
             individualBtn, courseBtn, facultyBtn;
 
     @FXML
@@ -57,22 +57,37 @@ public class OverviewSceneController extends Controller {
     // ========================================================================
 
     @FXML
-    protected void handleClearDataBtnAction(ActionEvent e) {
+    protected void handleRefreshDataBtnAction(ActionEvent e) {
         localDataRepository.clearAllData();
+
+        disableScene();
+        List<String> facultyStrings = new ArrayList<String>(
+                supportData.getSupportFaculties().keySet());
+        List<String> yearStrings = supportData.getSupportYears();
+        int workload = estimateWorkload(facultyStrings, yearStrings);
+
+        Task<Void> refreshTask = createBackgroundDataCrawlingTask(
+                facultyStrings, yearStrings, 0, workload);
+
+        Thread backgroundThread = new Thread(refreshTask);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
+
         updateDataStatus();
     }
 
     @FXML
-    protected void handleLoadDataBtnAction(ActionEvent actionEvent) {
+    protected void handleContinueLoadDataBtnAction(ActionEvent actionEvent) {
         disableScene();
-        final List<String> facultyStrings =
-                new ArrayList<String>(supportData.getSupportFaculties().keySet());
-        final List<String> years = supportData.getSupportYears();
-        final int workload = estimateWorkload(facultyStrings, years);
+        List<String> facultyStrings = new ArrayList<String>(
+                supportData.getSupportFaculties().keySet());
+        List<String> yearStrings = supportData.getSupportYears();
+        int workload = estimateWorkload(facultyStrings, yearStrings);
 
         Task<Void> updateTask = createBackgroundDataCrawlingTask(
-                facultyStrings, years, workload
-        );
+                facultyStrings, yearStrings,
+                calculateNumberOfParsedStudent(), workload);
+        progressBar.progressProperty().bind(updateTask.progressProperty());
 
         Thread backgroundThread = new Thread(updateTask);
         backgroundThread.setDaemon(true);
@@ -160,8 +175,8 @@ public class OverviewSceneController extends Controller {
         individualBtn.setDisable(true);
         courseBtn.setDisable(true);
         facultyBtn.setDisable(true);
-        clearDataBtn.setDisable(true);
-        loadDataBtn.setDisable(true);
+        refreshDataBtn.setDisable(true);
+        continueLoadDataBtn.setDisable(true);
 
         progressBar.setVisible(true);
         if (progressBar.progressProperty().isBound())
@@ -173,8 +188,8 @@ public class OverviewSceneController extends Controller {
         individualBtn.setDisable(false);
         courseBtn.setDisable(false);
         facultyBtn.setDisable(false);
-        clearDataBtn.setDisable(false);
-        loadDataBtn.setDisable(false);
+        refreshDataBtn.setDisable(false);
+        continueLoadDataBtn.setDisable(false);
 
         progressBar.setVisible(false);
         if (progressBar.progressProperty().isBound())
@@ -186,97 +201,44 @@ public class OverviewSceneController extends Controller {
     // PRIVATE HELPERS
     // ========================================================================
 
+    private int calculateNumberOfParsedStudent() {
+        int result = 0;
+        String pattern = null, prePattern = null;
+        for (String faculty : supportData.getSupportFaculties().keySet()) {
+            for (String year : supportData.getSupportYears()) {
+                pattern = faculty + year.substring(2);
+                if (localDataRepository.countStudentsByIDPattern(
+                        pattern + "%") > 0) {
+                    result += MAX_STUDENT_NUMBER;
+                    prePattern = pattern;
+                } else {
+                    pattern = null;
+                    result -= MAX_STUDENT_NUMBER;
+                    break;
+                }
+            }
+            if (pattern == null) break;
+        }
+
+        if (prePattern == null) return 0;
+
+        for (int i = MAX_STUDENT_NUMBER - 1; i >= 0; i--) {
+            String stuId = prePattern + fiveDigitsInteger(i);
+            if (localDataRepository.getStudentById(stuId) != null) {
+                result += i + 1;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     private Task<Void> createBackgroundDataCrawlingTask(
             final List<String> faculties,
             final List<String> years,
+            final int nPassedStudents,
             final int workload) {
-
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() {
-                // track this update
-                SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmSS");
-                UpdateStatus newStatus = new UpdateStatus();
-                newStatus.setStatus(false);
-                newStatus.setUpdateDate(Long.parseLong(format.format(new Date())));
-                localDataRepository.insertOrUpdateStatus(newStatus);
-
-                // Update process
-                try {
-                    crawlAndUpdateData();
-                } catch (Exception e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Crawling and Updating process");
-                    alert.setHeaderText("Something wrong");
-                    alert.setContentText(
-                            "Something occured when updating data: "
-                                    + e.getMessage());
-                    alert.showAndWait();
-                    return null;
-                } finally {
-                    // After updating, try enabling scene
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            enableScene();
-                        }
-                    });
-                }
-
-                // Update process is successful
-                newStatus.setStatus(true);
-                localDataRepository.insertOrUpdateStatus(newStatus);
-
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateDataStatus();
-                    }
-                });
-                return null;
-            }
-
-            private void crawlAndUpdateData() {
-                // track inserted courses (no need for student!)
-                Map<String, Integer> insertedCourses = new HashMap<String, Integer>();
-
-                // Update process
-                int parsedStudents = 0;
-                for (String faculty : faculties) {
-                    for (String year : years) {
-                        for (int i = 0; i <= 9999; i++) {
-                            String nextStudent = faculty + year.substring(2) + fiveDigitsInteger(i);
-                            ParsedResult result = webDataRepository.getMarkOfStudentBlocking(nextStudent);
-
-                            if (result != null)
-                                for (CourseResult cr : aggregateParsedData(result)) {
-                                    if (insertedCourses.containsKey(cr.getCourse().getCourseId())) {
-                                        int id = insertedCourses.get(cr.getCourse().getCourseId());
-                                        cr.getCourse().setId(id);
-                                    }
-                                    localDataRepository.insertCourseResult(cr);
-                                    insertedCourses.put(cr.getCourse().getCourseId(), cr.getCourse().getId());
-                                }
-
-                            parsedStudents++;
-                            updateProgress(parsedStudents, workload);
-
-                            final int currentParsedStudents = parsedStudents;
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressLabel.setText(currentParsedStudents + "/"
-                                            + workload + " students parsed");
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        };
-        progressBar.progressProperty().bind(task.progressProperty());
-        return task;
+        return new CrawlingTask(faculties, years, nPassedStudents, workload);
     }
 
     private List<CourseResult> aggregateParsedData(ParsedResult parsedResult) {
@@ -324,5 +286,145 @@ public class OverviewSceneController extends Controller {
         gpaPerCategory.put("All Student", studentGPAs);
 
         ChartFactory.makeHistogram(scoreHistogram, gpaPerCategory);
+    }
+
+    // ========================================================================
+    // ADDITIONAL TYPES
+    // ========================================================================
+
+    private class CrawlingTask extends Task<Void> {
+        private List<String> faculties, years;
+        int nPassedStudents, workload;
+
+        public CrawlingTask(List<String> faculties, List<String> years, int nPassedStudents, int workload) {
+            this.faculties = faculties;
+            this.years = years;
+            this.nPassedStudents = nPassedStudents;
+            this.workload = workload;
+        }
+
+        @Override
+        protected Void call() {
+            UpdateStatus thisUpdate = trackThisUpdate();
+
+            try {
+                crawlAndUpdateData();
+            } catch (Exception e) {
+                rasieAlert(e);
+                return null;
+            } finally {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        enableScene();
+                    }
+                });
+            }
+
+            finishSuccessThisUpdate(thisUpdate);
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateDataStatus();
+                }
+            });
+            return null;
+        }
+
+        private void crawlAndUpdateData() {
+            Map<String, Integer> insertedCourses =
+                    localDataRepository.getCourseIDs();
+            Map<String, Integer> insertedStudents =
+                    localDataRepository.getStudentIDs();
+
+            int parsedStudents = 0;
+            for (String faculty : faculties) {
+                for (String year : years) {
+                    parsedStudents = crawlStudentsOfFacultyAndYear(
+                            faculty, year,
+                            insertedCourses, insertedStudents,
+                            parsedStudents);
+                }
+            }
+        }
+
+        private void rasieAlert(final Exception e) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Crawling and Updating process");
+                    alert.setHeaderText("Something wrong");
+                    alert.setContentText("Something occured when updating data: "
+                            + e.getMessage());
+                    alert.showAndWait();
+                }
+            });
+        }
+
+        private UpdateStatus trackThisUpdate() {
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmSS");
+            UpdateStatus newStatus = new UpdateStatus();
+            newStatus.setStatus(false);
+            newStatus.setUpdateDate(Long.parseLong(format.format(new Date())));
+            localDataRepository.insertOrUpdateStatus(newStatus);
+            return newStatus;
+        }
+
+        private void finishSuccessThisUpdate(UpdateStatus thisUpdate) {
+            thisUpdate.setStatus(true);
+            localDataRepository.insertOrUpdateStatus(thisUpdate);
+        }
+
+        private int crawlStudentsOfFacultyAndYear(String faculty, String year,
+                Map<String, Integer> insertedCourses,
+                Map<String, Integer> insertedStudents,
+                int parsedStudents) {
+
+            for (int i = 0; i <= 9999; i++) {
+                if (parsedStudents < nPassedStudents) {
+                    parsedStudents++;
+                    continue;
+                }
+
+                String nextStudent = faculty + year.substring(2)
+                        + fiveDigitsInteger(i);
+                ParsedResult result = webDataRepository
+                        .getMarkOfStudentBlocking(nextStudent);
+
+                if (result != null)
+                    for (CourseResult cr : aggregateParsedData(result)) {
+                        String stuId = cr.getStudent().getStudentId();
+                        String coId = cr.getCourse().getCourseId();
+
+                        if (insertedCourses.containsKey(coId)) {
+                            int id = insertedCourses.get(coId);
+                            cr.getCourse().setId(id);
+                        }
+                        if (insertedStudents.containsKey(stuId)) {
+                            int id = insertedStudents.get(stuId);
+                            cr.getStudent().setId(id);
+                        }
+                        localDataRepository.insertCourseResult(cr);
+                        insertedCourses.put(cr.getCourse().getCourseId(),
+                                cr.getCourse().getId());
+                    }
+
+                parsedStudents++;
+                updateProgress(parsedStudents, workload);
+
+                final int currentParsedStudents = parsedStudents;
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressLabel.setText(currentParsedStudents
+                                + "/" + workload + " students parsed");
+                    }
+                });
+            }
+
+            return parsedStudents;
+        }
     }
 }

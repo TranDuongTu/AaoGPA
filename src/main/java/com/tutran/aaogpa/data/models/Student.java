@@ -32,4 +32,19 @@ public class Student extends DomainObject {
     public int hashCode() {
         return studentId.hashCode();
     }
+
+    public boolean equals(Object object) {
+        // Basic checks.
+        if (object == this) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        // Property checks.
+        Student other = (Student) object;
+        if (studentId == null ? other.studentId != null
+                : !studentId.equals(other.studentId))
+            return false;
+
+        // All passed.
+        return true;
+    }
 }

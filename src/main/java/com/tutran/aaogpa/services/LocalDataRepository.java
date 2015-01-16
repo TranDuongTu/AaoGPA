@@ -133,6 +133,10 @@ public class LocalDataRepository {
         return studentDAO.countStudentsByName(name);
     }
 
+    public Map<String, Integer> getStudentIDs() {
+        return studentDAO.getStudentIDs();
+    }
+
     /**
      * For Course data
      */
@@ -172,6 +176,10 @@ public class LocalDataRepository {
 
     public int countCoursesByCredit(int min, int max) {
         return courseDAO.countCoursesByCredit(min, max);
+    }
+
+    public Map<String, Integer> getCourseIDs() {
+        return courseDAO.getCourseIDs();
     }
 
     /**

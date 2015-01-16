@@ -83,6 +83,7 @@
         </property>
         <property name="supportYears">
             <list>
+                <value>2008</value>
                 <value>2009</value>
                 <value>2010</value>
                 <value>2011</value>

@@ -3,7 +3,9 @@ package com.tutran.aaogpa.data.local.hibernate;
 import com.tutran.aaogpa.data.local.CourseDAO;
 import com.tutran.aaogpa.data.models.Course;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CourseDAOHibernate extends GenericDAOHibernate<Course>
         implements CourseDAO {
@@ -21,6 +23,15 @@ public class CourseDAOHibernate extends GenericDAOHibernate<Course>
                 .list();
         return result != null && result.size() == 1 ?
             (Course) result.get(0) : null;
+    }
+
+    @Override
+    public Map<String, Integer> getCourseIDs() {
+        List<Course> courses = getAll();
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        for (Course course : courses)
+            result.put(course.getCourseId(), course.getId());
+        return result;
     }
 
     @Override

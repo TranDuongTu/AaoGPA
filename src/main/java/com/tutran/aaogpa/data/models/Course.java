@@ -41,4 +41,20 @@ public class Course extends DomainObject {
     public int hashCode() {
         return courseId.hashCode();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        // Basic checks.
+        if (object == this) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        // Property checks.
+        Course other = (Course) object;
+        if (courseId == null ? other.courseId != null
+                : !courseId.equals(other.courseId))
+            return false;
+
+        // All passed.
+        return true;
+    }
 }

@@ -29,7 +29,7 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Button fx:id="loadDataBtn" mnemonicParsing="false" onAction="#handleLoadDataBtnAction" prefWidth="170.0" text="Load Data From Web" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+            <Button fx:id="continueLoadDataBtn" mnemonicParsing="false" onAction="#handleContinueLoadDataBtnAction" prefWidth="170.0" text="Continue Load Data" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
             <Label fx:id="totalFacultyLabel" text="Total faculties: %d" GridPane.rowIndex="1" />
             <Label fx:id="totalYearLabel" text="Total years: %d" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label fx:id="totalStudentLabel" text="Total students: %d" GridPane.rowIndex="2" />
@@ -40,7 +40,7 @@
                   <Font name="System Italic" size="15.0" />
                </font>
             </Label>
-            <Button fx:id="clearDataBtn" mnemonicParsing="false" onAction="#handleClearDataBtnAction" prefWidth="170.0" text="Clear Local Data" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <Button fx:id="refreshDataBtn" mnemonicParsing="false" onAction="#handleRefreshDataBtnAction" prefWidth="170.0" text="Refresh Local Data" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
              <Label fx:id="progressLabel" GridPane.columnSpan="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.columnIndex="4" />
             <Label text="Supported Faculties" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="0">
                <font>
