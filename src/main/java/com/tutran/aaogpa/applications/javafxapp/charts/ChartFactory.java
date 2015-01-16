@@ -53,4 +53,26 @@ public final class ChartFactory {
 
         return rawChart;
     }
+
+    public static BarChart<String, Number> makeSimpleBarChart(
+            BarChart<String, Number> rawChart,
+            Map<String, Double> data) {
+        Axis<String> xAxis = rawChart.getXAxis();
+        Axis<Number> yAxis = rawChart.getYAxis();
+        xAxis.setLabel("Elements");
+        yAxis.setLabel("Score");
+        yAxis.setMinHeight(0);
+
+        XYChart.Series<String, Number> series =
+                new XYChart.Series<String, Number>();
+        series.setName("Courses Performance");
+        for (String element : data.keySet()) {
+            Number value = data.get(element);
+            series.getData().add(
+                    new XYChart.Data<String, Number>(element, value));
+        }
+        rawChart.getData().add(series);
+
+        return rawChart;
+    }
 }

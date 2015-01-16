@@ -23,7 +23,6 @@ public final class Statistician {
                 }
             }
         }
-
         return result;
     }
 }

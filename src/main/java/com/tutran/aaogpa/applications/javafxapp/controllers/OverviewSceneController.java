@@ -296,7 +296,8 @@ public class OverviewSceneController extends Controller {
         private List<String> faculties, years;
         int nPassedStudents, workload;
 
-        public CrawlingTask(List<String> faculties, List<String> years, int nPassedStudents, int workload) {
+        public CrawlingTask(List<String> faculties, List<String> years,
+                            int nPassedStudents, int workload) {
             this.faculties = faculties;
             this.years = years;
             this.nPassedStudents = nPassedStudents;
