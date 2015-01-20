@@ -77,12 +77,12 @@
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="courseBtn" mnemonicParsing="false" onAction="#handleCourseBtnAction" text="Course Analyzer" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+            <Button fx:id="courseBtn" mnemonicParsing="false" onAction="#handleCourseBtnAction" text="Course Examiner" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>
             </Button>
-            <Button fx:id="facultyBtn" mnemonicParsing="false" onAction="#handleFacultyBtnAction" text="Faculty Analyzer" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+            <Button fx:id="facultyBtn" mnemonicParsing="false" onAction="#handleFacultyBtnAction" text="Faculty Comparator" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                <font>
                   <Font name="System Bold Italic" size="18.0" />
                </font>

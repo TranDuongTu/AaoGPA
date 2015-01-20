@@ -124,7 +124,11 @@ public class AaoWebHtmlParserJsoup implements AaoWebHtmlParser {
         Course course = new Course();
         course.setCourseId(coId);
         course.setName(coName);
-        course.setCredit(Integer.parseInt(creditString));
+        try {
+            course.setCredit((int) Double.parseDouble(creditString));
+        } catch (NumberFormatException e) {
+            course.setCredit(0);
+        }
         return new Tuple<Course, Double>(course, mark);
     }
 }

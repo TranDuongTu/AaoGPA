@@ -312,6 +312,7 @@ public class OverviewSceneController extends Controller {
                 crawlAndUpdateData();
             } catch (Exception e) {
                 rasieAlert(e);
+                e.printStackTrace();
                 return null;
             } finally {
                 Platform.runLater(new Runnable() {
